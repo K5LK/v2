@@ -2,11 +2,19 @@
 
 Heavily customized version of the [AstroPaper](https://github.com/satnaing/astro-paper) theme with a new aesthetic, image galleries, global search modal, and dozens of visual and interactive improvements.
 
-**🌐 Live demo:** [devosfera.vercel.app](https://devosfera.vercel.app)
+**🌐 Live personal blog:** [devosfera.vercel.app](https://devosfera.vercel.app)  
+**🚀 Clean template demo:** [devosfera-blog.vercel.app](https://devosfera-blog.vercel.app)
 
 ![Devosfera OG](public/devosfera-og.webp)
 
-> **Note:** This project is primarily my personal blog. If anyone wishes to use it, feel free to delete all entries and edit the settings freely.
+> [!TIP]
+> **🌟 Personal Blog vs. Base Template:**  
+> This repository contains the source code for my personal production blog at **[devosfera.vercel.app](https://devosfera.vercel.app)**. It is built upon the open-source template **[0xdres/astro-devosfera](https://github.com/0xdres/astro-devosfera)**, but extended with custom personal features and experimental interactive mechanics (interactive terminal shell, daily physics widgets, Web Audio API synthesizers, quizzes, and arcade Easter eggs) that showcase the full potential and extensibility of the architecture.
+>
+> - If you want to check out the **live demo of the clean, uncustomized base template**, visit **[devosfera-blog.vercel.app](https://devosfera-blog.vercel.app)**.
+> - To clone and customize the base template without personal bloat, visit the base repository: **[github.com/0xdres/astro-devosfera](https://github.com/0xdres/astro-devosfera)**.
+> - To explore the complete architecture, technical decisions, and features of the base template, read the deep-dive article:  
+>   📖 **[Introducing Astro Devosfera: Re-engineering the Developer Blog Experience](https://devosfera.vercel.app/posts/introducing-astro-devosfera)** *(also available in Spanish at [`/es/posts/introducing-astro-devosfera`](https://devosfera.vercel.app/es/posts/introducing-astro-devosfera))*.
 
 > [!IMPORTANT]
 > **Social links and personal URLs are no longer hardcoded.**

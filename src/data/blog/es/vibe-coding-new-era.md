@@ -7,7 +7,6 @@ tags:
   - productividad
   - reflexión
   - desarrollo
-featured: true
 draft: false
 ---
 
