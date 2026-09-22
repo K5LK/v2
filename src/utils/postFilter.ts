@@ -10,8 +10,7 @@ dayjs.extend(timezone);
 const postFilter = ({ data }: ContentEntry) => {
   if (data.draft) return false;
 
-  const postTimezone = "timezone" in data ? data.timezone : undefined;
-  const pubDatetime = dayjs(data.pubDatetime).tz(postTimezone || SITE.timezone);
+  const pubDatetime = dayjs(data.pubDatetime).tz(SITE.timezone);
 
   const isPublishTimePassed =
     dayjs().tz(SITE.timezone).valueOf() >

@@ -22,7 +22,6 @@ type Props = {
   next?: string;
   structuredData?: Record<string, unknown>;
   tags?: string[];
-  faqs?: Array<{ question: string; answer: string }>;
 };
 
 const {
@@ -39,12 +38,10 @@ const {
   next,
   structuredData: structuredDataProp,
   tags,
-    faqs,
 } = Astro.props;
 
 const locale = Astro.currentLocale || SITE.lang || "en";
 const t = useTranslations(locale);
-const prefix = locale === "es" ? "es/" : "";
 
 // Always build canonical from SITE.website (production URL), never localhost.
 // Normalize trailing slash: always include it for consistency.
@@ -93,11 +90,6 @@ const finalStructuredData = structuredDataProp ?? (
           name: SITE.title,
           url: SITE.website,
           description: locale === "es" ? t("index.heroDesc") : SITE.desc,
-          potentialAction: {
-            "@type": "SearchAction",
-            target: `${SITE.website}${prefix}search/?q={search_term_string}`,
-            "query-input": "required name=search_term_string",
-          },
         }
       : (rawPath === "/about" || rawPath === "/es/about")
         ? {
@@ -113,21 +105,6 @@ const finalStructuredData = structuredDataProp ?? (
         : null
 );
 
-const faqSchema =
-  faqs && faqs.length > 0
-    ? {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faqs.map(faq => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.answer,
-          },
-        })),
-      }
-    : null;
 
 const showCursorGlow = SITE.backdropEffects.cursorGlow;
 const showGrain = SITE.backdropEffects.grain;
@@ -225,15 +202,6 @@ const showGrain = SITE.backdropEffects.grain;
           type="application/ld+json"
           is:inline
           set:html={JSON.stringify(finalStructuredData)}
-        />
-      )
-    }
-    {
-      faqSchema && (
-        <script
-          type="application/ld+json"
-          is:inline
-          set:html={JSON.stringify(faqSchema)}
         />
       )
     }

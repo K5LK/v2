@@ -33,7 +33,6 @@ export const SITE = {
     enabled: true, // show/hide intro player in home and compact player while navigating
     // src: path to file (relative to /public or absolute URL). Example: "/intro.mp3" or "https://example.com/stream"
     src: "https://fluxfm.streamabc.net/flx-chillhop-mp3-128-8581707",
-    // src: "/audio/intro-web.mp3",
     isStream: true, // true for radio/live stream URLs (example: https://fluxfm.streamabc.net/flx-chillhop-mp3-128-8581707)
     label: "LOFI", // display label in player
     duration: 30, // duration in seconds (used for local files, ignored on streams)

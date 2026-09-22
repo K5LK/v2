@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 public/pagefind
 .vercel
+
+# reviews & work docs
+CODE_QUALITY_REVIEW.md

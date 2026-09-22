@@ -32,12 +32,9 @@ const {
   author,
   description,
   ogImage: initOgImage,
-  canonicalURL,
   pubDatetime,
   modDatetime,
-  timezone,
   tags,
-  faqs,
 } = post.data;
 
 const { Content, headings } = await render(post);
@@ -69,11 +66,9 @@ const layoutProps = {
   description,
   pubDatetime,
   modDatetime,
-  canonicalURL,
   ogImage,
   scrollSmooth: true,
   tags,
-  faqs,
 };
 
 /* ========== Hybrid Navigation Logic ========== */
@@ -89,7 +84,6 @@ const prevPost = rawPrevPost
       filePath: rawPrevPost.filePath,
       pubDatetime: rawPrevPost.data.pubDatetime,
       modDatetime: rawPrevPost.data.modDatetime,
-      timezone: rawPrevPost.data.timezone,
       readingTime: rawPrevPost.body
         ? getReadingTime(rawPrevPost.body, locale)
         : null,
@@ -130,7 +124,6 @@ const recommendedPost = rawRecommendedPost
       filePath: rawRecommendedPost.filePath,
       pubDatetime: rawRecommendedPost.data.pubDatetime,
       modDatetime: rawRecommendedPost.data.modDatetime,
-      timezone: rawRecommendedPost.data.timezone,
       readingTime: rawRecommendedPost.body
         ? getReadingTime(rawRecommendedPost.body, locale)
         : null,
@@ -227,7 +220,6 @@ const recommendedPost = rawRecommendedPost
             <Datetime
               {pubDatetime}
               {modDatetime}
-              {timezone}
               size="sm"
               class="opacity-70 [&>svg]:hidden"
             />
@@ -393,7 +385,6 @@ const recommendedPost = rawRecommendedPost
               <Datetime
                 pubDatetime={prevPost.pubDatetime}
                 modDatetime={prevPost.modDatetime}
-                timezone={prevPost.timezone}
                 class="text-xs text-foreground/45 [&>svg]:size-3.5 [&>svg]:min-w-3.5 [&>svg]:text-accent/60 [&>time]:text-xs"
               />
               {prevPost.readingTime && (
@@ -459,7 +450,6 @@ const recommendedPost = rawRecommendedPost
               <Datetime
                 pubDatetime={recommendedPost.pubDatetime}
                 modDatetime={recommendedPost.modDatetime}
-                timezone={recommendedPost.timezone}
                 class="text-xs text-foreground/45 [&>svg]:size-3.5 [&>svg]:min-w-3.5 [&>svg]:text-accent/60 [&>time]:text-xs"
               />
               {recommendedPost.readingTime && (

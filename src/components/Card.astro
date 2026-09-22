@@ -31,7 +31,6 @@ const {
 
 const { title, description, pubDatetime } = data;
 const modDatetime = "modDatetime" in data ? data.modDatetime : null;
-const timezone = "timezone" in data ? data.timezone : undefined;
 const tags = "tags" in data ? data.tags : [];
 const locale = Astro.currentLocale || "en";
 const prefix = locale === "es" ? "/es" : "";
@@ -222,7 +221,6 @@ if (SITE.showCoverImages) {
       <Datetime
         pubDatetime={pubDatetime}
         modDatetime={modDatetime}
-        timezone={timezone}
       />
       {
         readingTime && (
