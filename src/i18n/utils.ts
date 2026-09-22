@@ -33,3 +33,26 @@ export function getTargetLanguageUrl(pathname: string, targetLocale: string) {
   }
   return path;
 }
+
+/**
+ * Checks whether a navigation route is active given the current pathname and target route.
+ * Handles trailing slashes, locale prefixes (/es/), and matches by exact path or root segment.
+ */
+export function isActive(currentPath: string, targetPath: string): boolean {
+  let normalizedCurrent =
+    currentPath.endsWith("/") && currentPath !== "/"
+      ? currentPath.slice(0, -1)
+      : currentPath;
+
+  if (normalizedCurrent.startsWith("/es/") || normalizedCurrent === "/es") {
+    normalizedCurrent = normalizedCurrent.slice(3) || "/";
+  }
+
+  const currentPathArray = normalizedCurrent.split("/").filter(p => p.trim());
+  const targetPathArray = targetPath.split("/").filter(p => p.trim());
+
+  return (
+    normalizedCurrent === targetPath ||
+    (currentPathArray.length > 0 && currentPathArray[0] === targetPathArray[0])
+  );
+}

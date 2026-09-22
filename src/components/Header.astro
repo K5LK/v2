@@ -8,7 +8,7 @@ import Logo from "@/assets/logo/devosfera.svg";
 import MobileMenu from "./MobileMenu.astro";
 import IntroAudioCompact from "./IntroAudioCompact.astro";
 import { SITE } from "@/config";
-import { useTranslations, getTargetLanguageUrl } from "@/i18n/utils";
+import { useTranslations, getTargetLanguageUrl, isActive as checkRouteActive } from "@/i18n/utils";
 
 const { pathname } = Astro.url;
 
@@ -25,17 +25,7 @@ const langToggleLabel =
 const currentPath =
   pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
 
-const isActive = (path: string) => {
-  let normalizedCurrent = currentPath;
-  if (normalizedCurrent.startsWith("/es/") || normalizedCurrent === "/es") {
-    normalizedCurrent = normalizedCurrent.slice(3) || "/";
-  }
-
-  const currentPathArray = normalizedCurrent.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-
-  return normalizedCurrent === path || currentPathArray[0] === pathArray[0];
-};
+const isActive = (path: string) => checkRouteActive(currentPath, path);
 ---
 
 <a

@@ -5,7 +5,7 @@ import IconGallery from "@/assets/icons/IconGallery.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import { SITE } from "@/config";
-import { useTranslations, getTargetLanguageUrl } from "@/i18n/utils";
+import { useTranslations, getTargetLanguageUrl, isActive as checkRouteActive } from "@/i18n/utils";
 
 interface Props {
   currentPath: string;
@@ -25,15 +25,7 @@ const langToggleTitle =
 const langToggleLabel =
   locale === "es" ? "Switch to English" : "Cambiar a Español";
 
-const isActive = (path: string) => {
-  let normalizedCurrent = currentPath;
-  if (normalizedCurrent.startsWith("/es/") || normalizedCurrent === "/es") {
-    normalizedCurrent = normalizedCurrent.slice(3) || "/";
-  }
-  const currentPathArray = normalizedCurrent.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-  return normalizedCurrent === path || currentPathArray[0] === pathArray[0];
-};
+const isActive = (path: string) => checkRouteActive(currentPath, path);
 ---
 
 <div id="mobile-menu" class="mobile-menu lg:hidden" aria-hidden="true">
