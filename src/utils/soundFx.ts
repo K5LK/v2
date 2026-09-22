@@ -67,7 +67,7 @@ class SoundFxEngine {
       if ("vibrate" in navigator && typeof navigator.vibrate === "function") {
         navigator.vibrate(pattern);
       }
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -166,7 +166,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.026);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -214,7 +214,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.035);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -255,7 +255,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.025);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -296,7 +296,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.02);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -337,7 +337,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.018);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -378,7 +378,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.18);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -427,7 +427,7 @@ class SoundFxEngine {
         osc.start(ctx.currentTime + i * 0.05);
         osc.stop(ctx.currentTime + i * 0.05 + 0.75);
       });
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -480,7 +480,7 @@ class SoundFxEngine {
         osc.start(ctx.currentTime + note.start);
         osc.stop(ctx.currentTime + note.start + note.dur + 0.02);
       });
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -532,7 +532,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.3);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -563,7 +563,7 @@ class SoundFxEngine {
         osc.start(ctx.currentTime + idx * 0.06);
         osc.stop(ctx.currentTime + idx * 0.06 + 0.22);
       });
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -592,7 +592,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.2);
-    } catch (_) {}
+    } catch {}
   }
 
   /**
@@ -640,7 +640,7 @@ class SoundFxEngine {
 
       osc.start();
       osc.stop(ctx.currentTime + 0.08);
-    } catch (_) {}
+    } catch {}
   }
 }
 
