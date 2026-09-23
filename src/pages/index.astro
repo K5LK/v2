@@ -16,7 +16,6 @@ import { SOCIALS } from "@/constants";
 import IntroAudio from "@/components/IntroAudio.astro";
 import SurpriseMeButton, { type RandomPostItem } from "@/components/SurpriseMeButton.astro";
 import HeroTerminalPrompt from "@/components/HeroTerminalPrompt.astro";
-import HeroBento from "@/components/HeroBento.astro";
 import { useTranslations } from "@/i18n/utils";
 
 const locale = Astro.currentLocale || "en";
@@ -56,86 +55,83 @@ const randomPostsPool: RandomPostItem[] = sortedPosts.map(entry => ({
     <!-- ═══════════════════ HERO ═══════════════════ -->
     <section
       id="hero"
-      class="hero-section relative pt-8 pb-12 sm:pt-12 sm:pb-16"
+      class="hero-section relative w-full pt-10 pb-12 sm:pt-16 sm:pb-16"
     >
-      <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-        <!-- Left Column: Hero Intro, Widgets & Bio (7 cols) -->
-        <div class="lg:col-span-7 flex flex-col justify-center">
-          <!--
-            Interactive Hero Widgets Row:
-            1. HeroTerminalPrompt: Interactive shell prompt with easter egg commands (matrix, ping, quote, theme, etc.) & 'C' shortcut.
-            2. SurpriseMeButton: 3D circular drum roulette picker with Web Audio ticks & confetti.
-          -->
-          <div class="mb-3 flex flex-wrap items-center gap-2.5">
-            <HeroTerminalPrompt />
-            <SurpriseMeButton posts={randomPostsPool} />
-          </div>
+      <!-- Subtle ambient backlight aura -->
+      <div
+        class="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 -z-10 h-64 sm:h-72 w-full max-w-2xl mx-auto rounded-full bg-accent/5 blur-3xl"
+        aria-hidden="true"
+      ></div>
 
-          <!-- Title -->
-          <h1
-            class="hero-title mb-3 text-4xl leading-[1.1] font-bold tracking-tight sm:text-5xl lg:text-6xl"
+      <div class="relative z-10 w-full flex flex-col items-center text-center">
+        <!-- 1. Eyebrow: Terminal Prompt Pill -->
+        <div class="mb-4 sm:mb-5 flex justify-center">
+          <HeroTerminalPrompt />
+        </div>
+
+        <!-- 2. Headline: Title with animated shimmer + RSS feed -->
+        <h1
+          class="hero-title mb-4 sm:mb-5 text-4xl leading-[1.12] font-bold tracking-tight sm:text-5xl lg:text-6xl text-center w-full"
+        >
+          {SITE.title}
+          <a
+            target="_blank"
+            href="/rss.xml"
+            class="ml-1 inline-block align-middle"
+            aria-label="RSS Feed"
+            title="RSS Feed"
           >
-            {SITE.title}
-            <a
-              target="_blank"
-              href="/rss.xml"
-              class="ml-1 inline-block align-middle"
-              aria-label="RSS Feed"
-              title="RSS Feed"
-            >
-              <IconRss
-                width={22}
-                height={22}
-                class="stroke-accent stroke-3 opacity-40 transition-opacity duration-300 hover:opacity-100"
-              />
-            </a>
-          </h1>
+            <IconRss
+              width={22}
+              height={22}
+              class="stroke-accent stroke-3 opacity-40 transition-opacity duration-300 hover:opacity-100"
+            />
+          </a>
+        </h1>
 
+        <!-- 3. Subtitle / Manifesto -->
+        <p
+          class="w-full max-w-2xl sm:max-w-3xl text-base leading-relaxed opacity-80 sm:text-lg lg:text-xl text-center mx-auto"
+        >
+          {t("index.heroDesc")}
+        </p>
+
+        <!-- 4. Interactive Action Deck: Lo-Fi Audio Player & Random Article Roulette -->
+        <div class="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3">
           {
             SITE.introAudio.enabled && (
-              <div class="mt-2">
-                <IntroAudio
-                  src={SITE.introAudio.src}
-                  label={SITE.introAudio.label}
-                  duration={SITE.introAudio.duration}
-                  isStream={SITE.introAudio.isStream}
-                />
+              <IntroAudio
+                src={SITE.introAudio.src}
+                label={SITE.introAudio.label}
+                duration={SITE.introAudio.duration}
+                isStream={SITE.introAudio.isStream}
+              />
+            )
+          }
+          <SurpriseMeButton posts={randomPostsPool} />
+        </div>
+
+        <!-- 5. Author & Socials Byline -->
+        <div class="mt-6 sm:mt-7 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+          <p class="text-sm opacity-80 shrink-0">
+            {t("index.writtenBy")}
+            <LinkButton
+              class="font-medium underline decoration-dashed underline-offset-4 hover:text-accent"
+              href={SITE.profile}
+              target="_blank"
+            >
+              {SITE.author}
+            </LinkButton>
+          </p>
+
+          {
+            // only display if at least one social link is enabled
+            SOCIALS.length > 0 && (
+              <div class="sm:border-l border-border/40 sm:pl-4 flex items-center justify-center">
+                <Socials />
               </div>
             )
           }
-
-          <!-- Description -->
-          <p
-            class="mt-6 max-w-xl text-base leading-relaxed opacity-75 sm:text-lg"
-          >
-            {t("index.heroDesc")}
-          </p>
-          <div class="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-            <p class="text-sm opacity-80 shrink-0">
-              {t("index.writtenBy")}
-              <LinkButton
-                class="font-medium underline decoration-dashed underline-offset-4 hover:text-accent"
-                href={SITE.profile}
-                target="_blank"
-              >
-                {SITE.author}
-              </LinkButton>
-            </p>
-
-            {
-              // only display if at least one social link is enabled
-              SOCIALS.length > 0 && (
-                <div class="sm:border-l border-border/40 sm:pl-4">
-                  <Socials />
-                </div>
-              )
-            }
-          </div>
-        </div>
-
-        <!-- Right Column: Hero Bento Deck (5 cols) -->
-        <div class="lg:col-span-5 flex flex-col justify-center">
-          <HeroBento />
         </div>
       </div>
     </section>

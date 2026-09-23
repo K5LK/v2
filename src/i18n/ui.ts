@@ -161,16 +161,6 @@ export const ui = {
     "shortcuts.toast.konami": "🎮 30 LIVES UNLOCKED! Konami Code Activated! Secret 'Arcade 80s' theme enabled ✨",
     "shortcuts.hint.konami": "🕹️ Secret Code: ↑ ↑ ↓ ↓ ← → ← → B A",
     "easteregg.konamiHint": "Psst... 30 lives await with the classic Contra code (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
-
-    // ── Hero Bento Deck ──
-    "heroWidget.bento.title": "Bento Dev Deck",
-    "heroWidget.bento.status": "Available & Coding",
-    "heroWidget.bento.timezone": "Guatemala",
-    "heroWidget.bento.recentActivity": "Recent Activity",
-    "heroWidget.bento.focusTag": "CURRENT FOCUS",
-    "heroWidget.bento.focusTitle": "Agentic Systems & Modern Web UI",
-    "heroWidget.bento.focusDesc": "Engineering high-performance web experiences, Astro architectures, and autonomous AI tooling.",
-    "heroWidget.bento.aboutLink": "About me",
   },
   es: {
     "nav.posts": "Publicaciones",
@@ -329,15 +319,5 @@ export const ui = {
     "shortcuts.toast.konami": "🎮 ¡30 VIDAS DESBLOQUEADAS! ¡Código Konami activado! Tema secreto 'Arcade 80s' activado ✨",
     "shortcuts.hint.konami": "🕹️ Código Secreto: ↑ ↑ ↓ ↓ ← → ← → B A",
     "easteregg.konamiHint": "Psst... 30 vidas te esperan con el código clásico de Contra (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
-
-    // ── Hero Bento Deck ──
-    "heroWidget.bento.title": "Bento Dev Deck",
-    "heroWidget.bento.status": "Disponible & Programando",
-    "heroWidget.bento.timezone": "Guatemala",
-    "heroWidget.bento.recentActivity": "Actividad Reciente",
-    "heroWidget.bento.focusTag": "ENFOQUE ACTUAL",
-    "heroWidget.bento.focusTitle": "Sistemas Agénticos & UI Moderna",
-    "heroWidget.bento.focusDesc": "Diseñando experiencias web de alto rendimiento, arquitecturas en Astro y herramientas agénticas con IA.",
-    "heroWidget.bento.aboutLink": "Sobre mí",
   },
 } as const;
