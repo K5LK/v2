@@ -1,9 +1,17 @@
 import fs from "fs";
 import path from "path";
 
-async function loadGoogleFonts(): Promise<
-  Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
-> {
+type Weight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
+type FontStyle = "normal" | "italic";
+
+export interface OgFontOption {
+  name: string;
+  data: ArrayBuffer;
+  weight: Weight;
+  style: FontStyle;
+}
+
+export async function loadOgFont(): Promise<OgFontOption[]> {
   // Ensure it searches from the root of the project
   const fontPath = path.resolve("./src/assets/fonts/wotfard.ttf");
   const fontData = fs.readFileSync(fontPath);
@@ -19,4 +27,4 @@ async function loadGoogleFonts(): Promise<
   ];
 }
 
-export default loadGoogleFonts;
+export default loadOgFont;

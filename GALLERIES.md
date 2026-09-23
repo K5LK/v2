@@ -52,7 +52,7 @@ In addition to `/galleries`, gallery entries can participate in the global mixed
 | `src/pages/galleries/index.astro` | Listing page `/galleries` |
 | `src/pages/galleries/[gallery].astro` | Detail page `/galleries/<slug>` |
 | `src/pages/index.astro` | Optional mixed feed on homepage |
-| `src/pages/posts/[...page].astro` | Optional mixed paginated listing |
+| `src/pages/posts/index.astro` | Optional mixed post listing |
 | `src/pages/archives/index.astro` | Optional mixed archive timeline |
 | `src/pages/tags/index.astro` | Optional mixed tag index |
 | `src/pages/tags/[tag]/[...page].astro` | Optional mixed tag detail pagination |
