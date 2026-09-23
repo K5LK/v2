@@ -1,5 +1,6 @@
 ---
-import { getCollection } from "astro:content";
+import { type CollectionEntry, getCollection } from "astro:content";
+import getSortedPosts from "@/utils/getSortedPosts";
 import Page from "../../../posts/[...slug]/index.astro";
 
 export async function getStaticPaths() {
@@ -7,16 +8,17 @@ export async function getStaticPaths() {
     "blog",
     ({ id, data }) => !data.draft && id.startsWith("es/")
   );
+  const sortedPosts = getSortedPosts(posts) as CollectionEntry<"blog">[];
   return posts.map(post => {
     const slug = post.id.replace(/^es\//, "").replace(/\.(md|mdx)$/, "");
     return {
       params: { slug },
-      props: { post },
+      props: { post, sortedPosts },
     };
   });
 }
 
-const { post } = Astro.props;
+const { post, sortedPosts } = Astro.props;
 ---
 
-<Page post={post} />
+<Page post={post} sortedPosts={sortedPosts} />

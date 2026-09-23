@@ -3,31 +3,37 @@ import { type CollectionEntry, getCollection } from "astro:content";
 import PostDetails from "@/layouts/PostDetails.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
 
-type Props = {
+export interface Props {
   post: CollectionEntry<"blog">;
-};
+  sortedPosts?: CollectionEntry<"blog">[];
+}
 
 export async function getStaticPaths() {
   const posts = await getCollection(
     "blog",
     ({ id, data }) => !data.draft && id.startsWith("en/")
   );
-  return posts.map(post => {
+  const sortedPosts = getSortedPosts(posts) as CollectionEntry<"blog">[];
+  return sortedPosts.map(post => {
     const slug = post.id.replace(/^en\//, "").replace(/\.(md|mdx)$/, "");
     return {
       params: { slug },
-      props: { post },
+      props: { post, sortedPosts },
     };
   });
 }
 
-const { post } = Astro.props;
+const { post, sortedPosts: propsSortedPosts } = Astro.props;
 
-const locale = Astro.currentLocale || "en";
-const posts = await getCollection("blog", ({ id }) =>
-  id.startsWith(`${locale}/`)
-);
-const sortedPosts = getSortedPosts(posts) as CollectionEntry<"blog">[];
+let sortedPosts = propsSortedPosts;
+if (!sortedPosts) {
+  const locale = Astro.currentLocale || "en";
+  const posts = await getCollection(
+    "blog",
+    ({ id, data }) => !data.draft && id.startsWith(`${locale}/`)
+  );
+  sortedPosts = getSortedPosts(posts) as CollectionEntry<"blog">[];
+}
 ---
 
 <PostDetails post={post} posts={sortedPosts} />
