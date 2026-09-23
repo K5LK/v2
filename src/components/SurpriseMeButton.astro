@@ -1,17 +1,17 @@
 ---
 /**
- * SurpriseMeButton.astro
+ * SurpriseMeButton.astro (Option A - Discovery Card Modal)
  *
- * An interactive gamified "Surprise Me" roulette button that selects a random blog post.
+ * An interactive "Surprise Me" button that selects a random blog post.
  * Features:
- * - 3D Cylindrical drum picker (iOS date-picker style) with infinite modular looping
- * - Real-time Web Audio API mechanical tick clicks & landing chord (zero external audio assets)
- * - Dynamic accent-colored canvas confetti burst on post selection
- * - Smooth Quartic Ease-Out physics for realistic mechanical wheel deceleration
- * - Clean Left-to-Right (LTR) text alignment with strict ellipsis bounds
+ * - Clean, lightweight modal dialog with responsive layout
+ * - Snappy ~450ms CSS title-shuffle animation with mechanical tick audio feedback
+ * - Reveals a discovery card with tag, reading time, excerpt, and instant navigation
  * - Full accessibility with keyboard escape, focus management, and localized strings
+ * - Zero heavy 3D drum physics or canvas confetti loops for optimal performance
  */
 import { useTranslations } from "@/i18n/utils";
+import "@/styles/surprise-me.css";
 
 export interface RandomPostItem {
   title: string;
@@ -39,7 +39,7 @@ const postsJson = JSON.stringify(posts);
   <button
     id="surprise-me-trigger"
     type="button"
-    class="surprise-me-btn group relative inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1.5 font-sans text-xs font-medium text-accent transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-accent/20 hover:shadow-lg hover:shadow-accent/20 active:scale-95 sm:text-sm"
+    class="surprise-me-btn group relative inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1.5 font-sans text-xs font-medium text-accent transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/60 hover:bg-accent/20 hover:shadow-lg hover:shadow-accent/20 active:scale-95 sm:text-sm cursor-pointer"
     title={t("index.surpriseMeHint")}
     aria-label={t("index.surpriseMeHint")}
     data-posts={postsJson}
@@ -50,9 +50,7 @@ const postsJson = JSON.stringify(posts);
       aria-hidden="true"></span>
 
     <!-- Animated Dice Icon -->
-    <span
-      class="dice-icon-wrap flex shrink-0 items-center justify-center text-accent"
-    >
+    <span class="dice-icon-wrap flex shrink-0 items-center justify-center text-accent">
       <svg
         class="dice-svg size-4 transition-transform duration-500 group-hover:rotate-180"
         viewBox="0 0 24 24"
@@ -83,7 +81,7 @@ const postsJson = JSON.stringify(posts);
     </span>
   </button>
 
-  <!-- Roulette Modal Dialog -->
+  <!-- Discovery Card Modal Dialog -->
   <div
     id="surprise-roulette-modal"
     class="roulette-modal-overlay fixed inset-0 z-50 hidden items-center justify-center p-4"
@@ -104,12 +102,6 @@ const postsJson = JSON.stringify(posts);
       id="roulette-card"
       class="roulette-card relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-border/40 bg-background/95 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 sm:p-7"
     >
-      <!-- Confetti Canvas for celebration -->
-      <canvas
-        id="roulette-confetti-canvas"
-        class="pointer-events-none absolute inset-0 z-30 h-full w-full"
-      ></canvas>
-
       <!-- Background Ambient Glow -->
       <div
         class="pointer-events-none absolute -top-24 -left-24 size-48 rounded-full bg-accent/20 blur-3xl"
@@ -123,9 +115,7 @@ const postsJson = JSON.stringify(posts);
       </div>
 
       <!-- Header -->
-      <div
-        class="relative z-20 flex items-center justify-between border-b border-border/30 pb-4"
-      >
+      <div class="relative z-20 flex items-center justify-between border-b border-border/30 pb-4">
         <div class="flex items-center gap-3">
           <span
             class="flex size-9 items-center justify-center rounded-xl bg-accent/15 text-accent shadow-sm ring-1 shadow-accent/20 ring-accent/30"
@@ -166,7 +156,7 @@ const postsJson = JSON.stringify(posts);
         <button
           id="roulette-close-btn"
           type="button"
-          class="flex size-8 items-center justify-center rounded-lg border border-border/30 bg-muted/15 text-foreground/70 transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent focus-visible:outline-accent"
+          class="flex size-8 items-center justify-center rounded-lg border border-border/30 bg-muted/15 text-foreground/70 transition-colors hover:border-accent/40 hover:bg-accent/10 hover:text-accent focus-visible:outline-accent cursor-pointer"
           aria-label={t("index.closeRoulette")}
         >
           <svg
@@ -184,66 +174,26 @@ const postsJson = JSON.stringify(posts);
         </button>
       </div>
 
-      <!-- Circular 3D Wheel Picker Drum Area -->
-      <div class="relative z-20 my-6">
-        <!-- 3D Cylindrical Drum Container (iOS date-picker style circular wheel) -->
+      <!-- Discovery Stage Area -->
+      <div class="relative z-20 my-5">
+        <!-- 1. Shuffling Mode State -->
         <div
-          id="roulette-drum-viewport"
-          class="wheel-viewport relative h-36 w-full overflow-hidden rounded-xl border border-accent/25 bg-muted/15 shadow-inner"
+          id="roulette-shuffle-view"
+          class="shuffle-stage rounded-xl border border-accent/25 bg-muted/15 p-6 shadow-inner"
         >
-          <!-- Top & bottom fade gradients for depth -->
-          <div
-            class="pointer-events-none absolute inset-x-0 top-0 z-20 h-10 bg-linear-to-b from-background via-background/85 to-transparent"
-          >
+          <div class="flex items-center gap-2 mb-2 text-xs font-semibold uppercase tracking-wider text-accent/80">
+            <span class="size-2 rounded-full bg-accent animate-ping"></span>
+            <span>{locale === "es" ? "Barajando publicaciones..." : "Shuffling articles..."}</span>
           </div>
-          <div
-            class="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-10 bg-linear-to-t from-background via-background/85 to-transparent"
-          >
-          </div>
-
-          <!-- Central Target Loupe / Selection Indicator Frame -->
-          <div
-            class="pointer-events-none absolute inset-x-2 top-1/2 z-10 h-10 -translate-y-1/2 rounded-lg border-2 border-accent/60 bg-accent/8 shadow-xs shadow-accent/25"
-          >
-          </div>
-
-          <!-- 3D Drum Stage -->
-          <div id="roulette-drum-stage" class="wheel-drum">
-            <!-- 9 dynamic slots populated and updated continuously in 3D -->
-            <div class="wheel-slot" data-slot="0">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="1">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="2">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="3">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="4">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="5">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="6">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="7">
-              <span class="wheel-slot-text"></span>
-            </div>
-            <div class="wheel-slot" data-slot="8">
-              <span class="wheel-slot-text"></span>
-            </div>
+          <div id="shuffle-title" class="shuffle-title-text line-clamp-2">
+            ...
           </div>
         </div>
 
-        <!-- Winning Post Card (Revealed smoothly after spin locks in) -->
+        <!-- 2. Discovery Winner Card (Revealed after snappy shuffle) -->
         <div
           id="roulette-winner-card"
-          class="roulette-winner-card hidden rounded-xl border border-accent/40 bg-accent/5 p-5 shadow-lg shadow-accent/10 transition-all duration-500"
+          class="roulette-winner-card hidden rounded-xl border border-accent/40 bg-accent/5 p-5 shadow-lg shadow-accent/10 transition-all duration-300"
         >
           <div class="flex flex-wrap items-center gap-2">
             <span
@@ -291,7 +241,7 @@ const postsJson = JSON.stringify(posts);
             <a
               id="winner-read-btn"
               href="#"
-              class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-background shadow-md shadow-accent/30 transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 hover:shadow-lg hover:shadow-accent/40"
+              class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-background shadow-md shadow-accent/30 transition-all duration-200 hover:-translate-y-0.5 hover:opacity-90 hover:shadow-lg hover:shadow-accent/40 cursor-pointer"
             >
               <span>{t("index.readNow")}</span>
               <svg
@@ -311,7 +261,7 @@ const postsJson = JSON.stringify(posts);
             <button
               id="winner-respin-btn"
               type="button"
-              class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/40 bg-muted/20 px-4 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-accent/40 hover:bg-accent/10 hover:text-accent"
+              class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border/40 bg-muted/20 px-4 py-2.5 text-sm font-medium text-foreground transition-all duration-200 hover:border-accent/40 hover:bg-accent/10 hover:text-accent cursor-pointer"
             >
               <svg
                 class="size-4"
@@ -322,9 +272,7 @@ const postsJson = JSON.stringify(posts);
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path
-                  d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"
-                ></path>
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
               </svg>
               <span>{t("index.spinAgain")}</span>
             </button>
@@ -335,490 +283,9 @@ const postsJson = JSON.stringify(posts);
   </div>
 </div>
 
-<style>
-  .roulette-modal-overlay {
-    display: flex;
-    animation: modal-fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
-
-  .roulette-modal-overlay.hidden {
-    display: none !important;
-  }
-
-  @keyframes modal-fade-in {
-    from {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .dice-icon-wrap {
-    transform-origin: center;
-  }
-
-  /* ── 3D Circular Picker Geometry ── */
-  .wheel-viewport {
-    perspective: 700px;
-    user-select: none;
-  }
-
-  .wheel-drum {
-    position: absolute;
-    inset: 0;
-    transform-style: preserve-3d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .wheel-slot {
-    position: absolute;
-    width: calc(100% - 3rem);
-    max-width: calc(100% - 5rem);
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 0.5rem;
-    box-sizing: border-box;
-    backface-visibility: hidden;
-    transform-origin: center center -90px;
-    color: var(--foreground);
-    will-change: transform, opacity;
-    min-width: 0;
-    overflow: hidden;
-  }
-
-  .wheel-slot-text {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-align: left;
-    direction: ltr;
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-
-  .wheel-slot.active-center .wheel-slot-text {
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 0.92rem;
-    text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .roulette-modal-overlay,
-    .dice-svg,
-    .roulette-winner-card {
-      transition: none !important;
-      animation: none !important;
-    }
-  }
-</style>
-
 <script>
-  import { navigate } from "astro:transitions/client";
-  import { soundFx } from "@/utils/soundFx";
+  import { initSurpriseRoulette } from "@/scripts/surprise-me";
 
-  interface PostItem {
-    title: string;
-    href: string;
-    tag?: string;
-    readingTime?: string;
-    description?: string;
-  }
-
-  // Accent-colored Particle Confetti System
-  function launchConfetti(canvas: HTMLCanvasElement | null) {
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-
-    // Get current accent color from CSS variable
-    const computedAccent =
-      getComputedStyle(document.documentElement)
-        .getPropertyValue("--accent")
-        .trim() || "#008fec";
-
-    const colors = [
-      computedAccent,
-      "#ffffff",
-      "rgba(255, 215, 0, 0.9)", // Gold
-      "rgba(255, 255, 255, 0.8)",
-    ];
-
-    interface Particle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-      color: string;
-      alpha: number;
-      rotation: number;
-      vRot: number;
-    }
-
-    const particles: Particle[] = [];
-    const count = 35;
-    const originX = canvas.width / 2;
-    const originY = canvas.height / 2 - 20;
-
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 6;
-      particles.push({
-        x: originX,
-        y: originY,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 1.5,
-        size: 3 + Math.random() * 4,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        alpha: 1,
-        rotation: Math.random() * 360,
-        vRot: (Math.random() - 0.5) * 10,
-      });
-    }
-
-    const activeCanvas = canvas;
-    const activeCtx = ctx;
-    const start = performance.now();
-    function animate(time: number) {
-      if (!activeCtx || !activeCanvas) return;
-      const elapsed = time - start;
-      if (elapsed > 1200) {
-        activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
-        return;
-      }
-
-      activeCtx.clearRect(0, 0, activeCanvas.width, activeCanvas.height);
-
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.15; // Gravity
-        p.vx *= 0.96; // Air drag
-        p.rotation += p.vRot;
-        p.alpha = Math.max(0, 1 - elapsed / 1200);
-
-        activeCtx.save();
-        activeCtx.globalAlpha = p.alpha;
-        activeCtx.translate(p.x, p.y);
-        activeCtx.rotate((p.rotation * Math.PI) / 180);
-        activeCtx.fillStyle = p.color;
-        activeCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        activeCtx.restore();
-      }
-
-      requestAnimationFrame(animate);
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-  let lastPickedHref = "";
-
-  function initSurpriseRoulette() {
-    const trigger = document.getElementById(
-      "surprise-me-trigger"
-    ) as HTMLButtonElement | null;
-    const modal = document.getElementById(
-      "surprise-roulette-modal"
-    ) as HTMLElement | null;
-    const backdrop = document.getElementById(
-      "roulette-backdrop"
-    ) as HTMLElement | null;
-    const closeBtn = document.getElementById(
-      "roulette-close-btn"
-    ) as HTMLButtonElement | null;
-    const drumViewport = document.getElementById(
-      "roulette-drum-viewport"
-    ) as HTMLElement | null;
-    const winnerCard = document.getElementById(
-      "roulette-winner-card"
-    ) as HTMLElement | null;
-    const winnerTag = document.getElementById(
-      "winner-tag"
-    ) as HTMLElement | null;
-    const winnerTime = document.getElementById(
-      "winner-time-val"
-    ) as HTMLElement | null;
-    const winnerTitle = document.getElementById(
-      "winner-title"
-    ) as HTMLElement | null;
-    const winnerDesc = document.getElementById(
-      "winner-desc"
-    ) as HTMLElement | null;
-    const winnerReadBtn = document.getElementById(
-      "winner-read-btn"
-    ) as HTMLAnchorElement | null;
-    const winnerRespinBtn = document.getElementById(
-      "winner-respin-btn"
-    ) as HTMLButtonElement | null;
-    const statusText = document.getElementById(
-      "roulette-status-text"
-    ) as HTMLElement | null;
-    const confettiCanvas = document.getElementById(
-      "roulette-confetti-canvas"
-    ) as HTMLCanvasElement | null;
-    const diceIcon = document.getElementById(
-      "modal-dice-icon"
-    ) as SVGElement | null;
-    const slotElements = document.querySelectorAll<HTMLElement>(".wheel-slot");
-
-    if (!trigger || !modal || slotElements.length === 0) return;
-
-    let rawPosts: PostItem[] = [];
-    try {
-      rawPosts = JSON.parse(trigger.dataset.posts || "[]");
-    } catch {
-      rawPosts = [];
-    }
-
-    if (rawPosts.length === 0) return;
-
-    let isSpinning = false;
-    let selectedPost: PostItem | null = null;
-    let currentWheelOffset = 0;
-    let animFrameId: number | null = null;
-
-    // Helper: Modulo that always returns positive result
-    const mod = (n: number, m: number) => ((n % m) + m) % m;
-
-    // Render 3D Circular Wheel at a fractional offset
-    function renderDrumAtOffset(offset: number) {
-      const totalPosts = rawPosts.length;
-      const slotCount = slotElements.length; // 9 slots: indices -4 to +4
-      const halfSlots = Math.floor(slotCount / 2); // 4
-      const anglePerSlot = 24; // degrees per item step
-      const cylinderRadius = 90; // px depth in 3D
-
-      const baseIndex = Math.floor(offset);
-      const fractionalPart = offset - baseIndex;
-
-      slotElements.forEach((el, i) => {
-        const slotOffsetFromCenter = i - halfSlots; // e.g. -4, -3, -2, -1, 0, 1, 2, 3, 4
-        const relativeItemPos = slotOffsetFromCenter - fractionalPart;
-        const angle = relativeItemPos * anglePerSlot;
-
-        // Determine which post goes in this slot
-        const postIndex = mod(baseIndex + slotOffsetFromCenter, totalPosts);
-        const post = rawPosts[postIndex];
-
-        const textEl = el.querySelector<HTMLElement>(".wheel-slot-text");
-        if (textEl && post) {
-          textEl.textContent = post.title;
-          el.title = post.title;
-        }
-
-        // 3D transform on circular drum
-        const absAngle = Math.abs(angle);
-        const opacity = Math.max(0, 1 - Math.pow(absAngle / 65, 2));
-        const scale = Math.max(0.75, 1 - absAngle / 200);
-
-        el.style.transform = `rotateX(${-angle}deg) translateZ(${cylinderRadius}px) scale(${scale})`;
-        el.style.opacity = String(opacity);
-
-        // Highlight center active slot
-        if (absAngle < 12) {
-          el.classList.add("active-center");
-        } else {
-          el.classList.remove("active-center");
-        }
-      });
-    }
-
-    function openModal() {
-      modal?.classList.remove("hidden");
-      document.body.style.overflow = "hidden";
-      spin();
-    }
-
-    function closeModal() {
-      if (isSpinning) return;
-      if (animFrameId) cancelAnimationFrame(animFrameId);
-      modal?.classList.add("hidden");
-      document.body.style.overflow = "";
-    }
-
-    function spin() {
-      if (isSpinning || rawPosts.length === 0) return;
-      isSpinning = true;
-
-      if (animFrameId) cancelAnimationFrame(animFrameId);
-
-      // Filter out previously picked post if we have > 1 posts
-      const availablePool =
-        rawPosts.length > 1
-          ? rawPosts.filter(p => p.href !== lastPickedHref)
-          : rawPosts;
-
-      // Pick winner
-      const winner =
-        availablePool[Math.floor(Math.random() * availablePool.length)];
-      selectedPost = winner;
-      lastPickedHref = winner.href;
-
-      const totalPosts = rawPosts.length;
-      const winnerIndex = rawPosts.findIndex(p => p.href === winner.href);
-
-      // Reset views
-      drumViewport?.classList.remove("hidden");
-      winnerCard?.classList.add("hidden");
-      if (statusText) {
-        const isEs = document.documentElement.lang === "es";
-        statusText.textContent = isEs
-          ? "Buscando algo genial para ti..."
-          : "Selecting something awesome for you...";
-      }
-
-      // Rotate dice icon
-      if (diceIcon) {
-        diceIcon.style.transform = `rotate(${Math.floor(360 + Math.random() * 720)}deg)`;
-      }
-
-      // Calculate smooth rotational physics:
-      // Start from current offset, do 2 to 3 full carousel cycles (e.g. 25-35 steps), and land precisely on winnerIndex
-      const startOffset = currentWheelOffset;
-      const minSteps = Math.max(22, totalPosts * 2);
-      const currentPosInCycle = mod(Math.round(startOffset), totalPosts);
-      const distanceToWinner = mod(winnerIndex - currentPosInCycle, totalPosts);
-      const totalStepsToTravel = minSteps + distanceToWinner;
-      const targetOffset = startOffset + totalStepsToTravel;
-
-      const duration = 2200; // ms total spin time
-      const startTime = performance.now();
-      let lastTickStep = Math.floor(startOffset);
-
-      // Custom Quartic Ease-Out curve for realistic mechanical deceleration
-      function easeOutQuart(x: number): number {
-        return 1 - Math.pow(1 - x, 4);
-      }
-
-      function step(now: number) {
-        const elapsed = now - startTime;
-        const progress = Math.min(1, elapsed / duration);
-        const easedProgress = easeOutQuart(progress);
-
-        currentWheelOffset = startOffset + totalStepsToTravel * easedProgress;
-        renderDrumAtOffset(currentWheelOffset);
-
-        // Play tick sound whenever we cross an item boundary
-        const currentStep = Math.floor(currentWheelOffset);
-        if (currentStep > lastTickStep) {
-          lastTickStep = currentStep;
-          // Pitch slightly modulates during spin
-          const velocity = 1 - progress;
-          soundFx.playTick(600 + velocity * 450);
-        }
-
-        if (progress < 1) {
-          animFrameId = requestAnimationFrame(step);
-        } else {
-          // Exactly align winner at targetOffset
-          currentWheelOffset = targetOffset;
-          renderDrumAtOffset(currentWheelOffset);
-
-          setTimeout(() => {
-            finishSpin(winner);
-          }, 250);
-        }
-      }
-
-      animFrameId = requestAnimationFrame(step);
-    }
-
-    function finishSpin(winner: PostItem) {
-      isSpinning = false;
-
-      // SFX chime & confetti
-      soundFx.playChime();
-      launchConfetti(confettiCanvas);
-
-      // Update text
-      if (statusText) {
-        const isEs = document.documentElement.lang === "es";
-        statusText.textContent = isEs
-          ? "¡Encontramos tu próxima lectura!"
-          : "Here's your next read!";
-      }
-
-      // Populate winner card
-      if (winnerTag) {
-        winnerTag.textContent = winner.tag ? `#${winner.tag}` : "#dev";
-      }
-      if (winnerTime) {
-        winnerTime.textContent = winner.readingTime || "5 min";
-      }
-      if (winnerTitle) {
-        winnerTitle.textContent = winner.title;
-      }
-      if (winnerDesc) {
-        winnerDesc.textContent = winner.description || "";
-      }
-      if (winnerReadBtn) {
-        winnerReadBtn.href = winner.href;
-        winnerReadBtn.focus();
-      }
-
-      // Transition views
-      drumViewport?.classList.add("hidden");
-      winnerCard?.classList.remove("hidden");
-    }
-
-    // Event listeners
-    trigger.addEventListener("click", openModal);
-    backdrop?.addEventListener("click", closeModal);
-    closeBtn?.addEventListener("click", closeModal);
-    winnerRespinBtn?.addEventListener("click", spin);
-
-    winnerReadBtn?.addEventListener("click", e => {
-      e.preventDefault();
-      if (selectedPost?.href) {
-        closeModal();
-        navigate(selectedPost.href);
-      }
-    });
-
-    // Keyboard controls
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (!modal.classList.contains("hidden")) {
-        if (e.key === "Escape") {
-          closeModal();
-        } else if (e.key === "r" || e.key === "R" || e.key === " ") {
-          if (document.activeElement !== winnerReadBtn) {
-            e.preventDefault();
-            spin();
-          }
-        }
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-
-    document.addEventListener(
-      "astro:before-swap",
-      () => {
-        if (animFrameId) cancelAnimationFrame(animFrameId);
-        window.removeEventListener("keydown", onKeyDown);
-        document.body.style.overflow = "";
-      },
-      { once: true }
-    );
-  }
-
-  // Run on first load and Astro view transitions
   initSurpriseRoulette();
   document.addEventListener("astro:page-load", initSurpriseRoulette);
 </script>

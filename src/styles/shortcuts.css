@@ -1,0 +1,626 @@
+/* ===== Shortcuts Modal Styles ===== */
+
+/* ===== Overlay ===== */
+.shortcuts-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: min(12vh, 6rem);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.shortcuts-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== Backdrop ===== */
+.shortcuts-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--background) 80%, transparent);
+}
+
+/* ===== Container ===== */
+.shortcuts-modal-container {
+  position: relative;
+  width: 94%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  background: color-mix(in srgb, var(--foreground) 3%, var(--background));
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 5%, transparent),
+    0 4px 12px color-mix(in srgb, var(--background) 40%, transparent),
+    0 20px 60px -12px color-mix(in srgb, var(--background) 70%, transparent),
+    0 0 100px -20px color-mix(in srgb, var(--accent) 12%, transparent);
+  transform: scale(0.95) translateY(-12px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.shortcuts-modal-overlay.active .shortcuts-modal-container {
+  transform: scale(1) translateY(0);
+}
+
+/* ===== Aurora orbs ===== */
+.modal-aurora {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.modal-aurora-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+}
+
+.modal-aurora-orb-1 {
+  width: 200px;
+  height: 200px;
+  top: -20%;
+  left: -10%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 25%, transparent),
+    transparent 70%
+  );
+}
+
+.modal-aurora-orb-2 {
+  width: 180px;
+  height: 180px;
+  bottom: -20%;
+  right: -10%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    transparent 70%
+  );
+}
+
+/* ===== Cursor glow ===== */
+.modal-cursor-glow {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent) 10%, transparent),
+    transparent 70%
+  );
+  filter: blur(30px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  transform: translate(-50%, -50%) translateZ(0);
+  left: var(--gx, 0px);
+  top: var(--gy, 0px);
+}
+
+.modal-border-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--accent) 20%, transparent),
+      transparent,
+      color-mix(in srgb, var(--accent) 20%, transparent)
+    )
+    border-box;
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  opacity: 0.4;
+}
+
+/* ===== Header ===== */
+.shortcuts-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 8%, transparent);
+  background: color-mix(in srgb, var(--foreground) 1.5%, transparent);
+  position: relative;
+  z-index: 2;
+}
+
+.shortcuts-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 600;
+}
+
+.keyboard-icon-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  color: var(--accent);
+}
+
+.shortcuts-title-text {
+  background: linear-gradient(135deg, var(--foreground), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shortcuts-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 0.375rem;
+  color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  transition: all 0.2s ease;
+}
+
+.shortcuts-modal-close:hover {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* ===== Mobile Warning ===== */
+.shortcuts-mobile-warning {
+  display: none;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  font-family: var(--font-firacode), monospace;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+}
+
+@media (max-width: 640px) {
+  .shortcuts-mobile-warning {
+    display: flex;
+  }
+}
+
+/* ===== Body ===== */
+.shortcuts-modal-body {
+  position: relative;
+  z-index: 2;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .shortcuts-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .md\:col-span-2 {
+    grid-column: span 2 / span 2;
+  }
+}
+
+.shortcuts-group {
+  padding: 1.25rem;
+  border-radius: 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 6%, transparent);
+  background: color-mix(in srgb, var(--foreground) 1.5%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.group-title {
+  margin-bottom: 0.85rem;
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.shortcuts-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--foreground) 5%, transparent);
+}
+
+.shortcuts-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.action-desc {
+  color: color-mix(in srgb, var(--foreground) 80%, transparent);
+}
+
+.key-combo {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* ===== Keycaps ===== */
+.kbd-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  font-size: 0.65rem;
+  font-family: var(--font-firacode, monospace);
+  font-weight: 600;
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--foreground) 10%, transparent),
+    0 2px 4px color-mix(in srgb, var(--background) 50%, transparent);
+}
+
+/* ===== Modal Full-Width Footer Hint Bar ===== */
+.shortcuts-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.65rem 1.25rem;
+  border-top: 1px dashed color-mix(in srgb, var(--border) 25%, transparent);
+  background: color-mix(in srgb, var(--foreground) 2%, transparent);
+  font-family: var(--font-firacode, monospace);
+  font-size: 0.725rem;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  box-sizing: border-box;
+}
+
+.konami-hint-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.konami-hint-icon {
+  font-size: 0.85rem;
+}
+
+.konami-hint-text {
+  font-weight: 500;
+}
+
+.konami-hint-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  white-space: nowrap;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ===== Centered Konami Celebration Modal ===== */
+.konami-celebration-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: konami-pop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.konami-celebration-overlay.hidden {
+  display: none;
+}
+
+.konami-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 255;
+}
+
+.konami-celebration-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 251;
+}
+
+.konami-celebration-card {
+  position: relative;
+  z-index: 260;
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+  border-radius: 1.5rem;
+  border: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--background) 96%, transparent);
+  padding: 2.25rem 1.75rem;
+  box-shadow:
+    0 0 35px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 0 60px color-mix(in srgb, var(--border) 25%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--accent) 10%, transparent);
+  animation: card-float 4s ease-in-out infinite alternate;
+}
+
+.konami-trophy-icon {
+  font-size: 3rem;
+  margin-bottom: 0.75rem;
+  animation: icon-bounce 1.5s ease-in-out infinite alternate;
+}
+
+.konami-title {
+  font-family: var(--font-firacode), monospace;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--accent) 40%, transparent);
+  margin-bottom: 0.6rem;
+}
+
+.konami-desc {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+  margin-bottom: 1.25rem;
+}
+
+.konami-keys-badge {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 1.5rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  font-family: var(--font-firacode), monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.konami-keys-badge span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 0.2rem;
+  background: color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.konami-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.75rem;
+  border-radius: 999px;
+  font-family: var(--font-firacode), monospace;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--accent), var(--border));
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.konami-action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+@keyframes konami-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes card-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes icon-bounce {
+  from {
+    transform: scale(1) rotate(-4deg);
+  }
+  to {
+    transform: scale(1.15) rotate(4deg);
+  }
+}
+
+/* ===== Toasts ===== */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+  pointer-events: none;
+}
+
+.shortcuts-toast {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 260px;
+  max-width: 380px;
+  border-radius: 0.875rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  background: color-mix(in srgb, var(--foreground) 3%, var(--background));
+  box-shadow:
+    0 4px 12px color-mix(in srgb, var(--background) 20%, transparent),
+    0 16px 32px -4px color-mix(in srgb, var(--accent) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--foreground) 6%, transparent);
+  transform: translateX(3rem) scale(0.95);
+  opacity: 0;
+  transition:
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s ease;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+}
+
+.shortcuts-toast.active {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+.shortcuts-toast.exit {
+  transform: translateX(1.5rem) scale(0.95);
+  opacity: 0;
+  transition:
+    transform 0.25s ease-in,
+    opacity 0.2s ease-in;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem 0.85rem;
+}
+
+.toast-keys {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.toast-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  font-size: 0.625rem;
+  font-family: var(--font-firacode, monospace);
+  font-weight: 700;
+  border-radius: 0.25rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 15%, transparent),
+    color-mix(in srgb, var(--accent) 5%, transparent)
+  );
+  color: var(--accent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--accent) 20%, transparent),
+    0 2px 4px color-mix(in srgb, var(--background) 30%, transparent);
+}
+
+.toast-message {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--foreground) 85%, transparent);
+  word-break: break-word;
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 60%, var(--border))
+  );
+  width: 100%;
+  transform-origin: left;
+  animation: toast-progress-shrink 3s linear forwards;
+}
+
+@keyframes toast-progress-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
