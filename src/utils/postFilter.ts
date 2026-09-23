@@ -1,20 +1,13 @@
 import { SITE } from "@/config";
 import type { ContentEntry } from "./contentEntry";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const postFilter = ({ data }: ContentEntry) => {
   if (data.draft) return false;
 
-  const pubDatetime = dayjs(data.pubDatetime).tz(SITE.timezone);
-
+  const pubTime = new Date(data.pubDatetime).getTime();
   const isPublishTimePassed =
-    dayjs().tz(SITE.timezone).valueOf() >
-    pubDatetime.valueOf() - SITE.scheduledPostMargin;
+    Date.now() > pubTime - SITE.scheduledPostMargin;
+
   return import.meta.env.DEV || isPublishTimePassed;
 };
 
