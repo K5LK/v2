@@ -2,26 +2,17 @@
  * soundFx.ts
  *
  * Centralized, zero-dependency Web Audio API synthesizer for tactile UI micro-sounds.
- * Provides 100% distinct acoustic synthesis algorithms for both "mechanical" and "scifi" profiles.
- *
- * Sound Profiles:
- * 1. "mechanical": Tactile, organic, mechanical switches (Cherry MX Blue, wooden gear cogs, celesta chimes).
- * 2. "scifi": Cyberpunk HUD, holographic blips, laser chirps, hyperdrive surges, and cosmic synth chords.
+ * Provides organic, mechanical micro-switch, wood cog, and celesta bell audio synthesis.
  *
  * Capabilities:
  * - 100% synthesized in real-time (0 KB external audio files).
- * - Distinct acoustic profiles for all 8 sound events.
- * - Mobile Haptic Feedback (navigator.vibrate) synced to each profile.
+ * - Mobile Haptic Feedback (navigator.vibrate) synced to sound events.
  * - 8-Bit NES Chiptune fanfare for the Konami Code easter egg.
- * - Global Mute FX & Profile persistence in localStorage with reactive event broadcasting.
+ * - Global Mute/Unmute state persistence in localStorage with reactive event broadcasting.
  */
 
-export type SoundProfile = "mechanical" | "scifi";
-
 const STORAGE_KEY = "ui-sound-fx";
-const STORAGE_PROFILE_KEY = "ui-sound-profile";
 const CHANGE_EVENT = "soundfx:change";
-const PROFILE_CHANGE_EVENT = "soundprofile:change";
 
 // Harmonic frequencies mapped to each accent color for tactile chromatic feedback
 const ACCENT_PITCH_MAP: Record<string, number> = {
@@ -100,38 +91,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Get active sound profile ("mechanical" | "scifi").
-   */
-  public getProfile(): SoundProfile {
-    if (typeof window === "undefined") return "mechanical";
-    return (localStorage.getItem(STORAGE_PROFILE_KEY) as SoundProfile) || "mechanical";
-  }
-
-  /**
-   * Set sound profile and broadcast event.
-   */
-  public setProfile(profile: SoundProfile): void {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(STORAGE_PROFILE_KEY, profile);
-    window.dispatchEvent(
-      new CustomEvent(PROFILE_CHANGE_EVENT, { detail: { profile } })
-    );
-    this.playPop("arcade");
-  }
-
-  /**
-   * Cycle to next sound profile.
-   */
-  public cycleProfile(): SoundProfile {
-    const next: SoundProfile = this.getProfile() === "mechanical" ? "scifi" : "mechanical";
-    this.setProfile(next);
-    return next;
-  }
-
-  /**
-   * Toggle Switch Sound:
-   * - Mechanical: Analog toggle switch click (650Hz -> 320Hz).
-   * - Sci-Fi: Resonant warp pulse sweep (420Hz -> 1080Hz).
+   * Toggle Switch Sound: Analog mechanical toggle switch click (650Hz -> 320Hz).
    */
   public playSwitch(): void {
     if (!this.isEnabled()) return;
@@ -141,25 +101,15 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(420, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1080, ctx.currentTime + 0.022);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(650, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.018);
 
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.024);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(650, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.018);
-
-        gain.gain.setValueAtTime(0.065, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.018);
-      }
+      gain.gain.setValueAtTime(0.065, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.018);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -170,9 +120,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Swatch / Chip Pop Sound:
-   * - Mechanical: Woody organic bubble pop (downward pitch bend).
-   * - Sci-Fi: Holographic laser chirp (FM frequency modulation zap).
+   * Swatch / Chip Pop Sound: Woody organic bubble pop (downward pitch bend).
    */
   public playPop(accentOrFreq: string | number = "blue"): void {
     if (!this.isEnabled()) return;
@@ -187,27 +135,16 @@ class SoundFxEngine {
           ? accentOrFreq
           : ACCENT_PITCH_MAP[accentOrFreq.toLowerCase()] || 1000;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(pitch * 0.7, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 2.1, ctx.currentTime + 0.012);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 1.1, ctx.currentTime + 0.03);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(pitch, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 1.25, ctx.currentTime + 0.008);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 0.65, ctx.currentTime + 0.024);
 
-        gain.gain.setValueAtTime(0.065, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.032);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(pitch, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 1.25, ctx.currentTime + 0.008);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.65, ctx.currentTime + 0.024);
-
-        gain.gain.setValueAtTime(0.075, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.024);
-      }
+      gain.gain.setValueAtTime(0.075, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.024);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -218,9 +155,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Navigation / Modal Micro-Tap:
-   * - Mechanical: Mouse micro-switch / key tap (1200Hz -> 500Hz).
-   * - Sci-Fi: Digital HUD blip with high-pitch ping (2400Hz).
+   * Navigation / Modal Micro-Tap: Mouse micro-switch / key tap (1200Hz -> 500Hz).
    */
   public playTap(pitch = 1200): void {
     if (!this.isEnabled()) return;
@@ -230,25 +165,15 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(pitch * 1.8, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.9, ctx.currentTime + 0.02);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(pitch, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 0.45, ctx.currentTime + 0.012);
 
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.022);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(pitch, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.45, ctx.currentTime + 0.012);
-
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.012);
-      }
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.012);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -259,9 +184,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Roulette Drum Tick:
-   * - Mechanical: Wood / mechanical gear cog tick.
-   * - Sci-Fi: Quantum sensor digital tick (dual high frequencies).
+   * Drum / Item Tick: Wood / mechanical gear cog tick.
    */
   public playTick(pitch = 950): void {
     if (!this.isEnabled()) return;
@@ -271,25 +194,15 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(pitch * 2.2, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.8, ctx.currentTime + 0.014);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(pitch, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(pitch * 0.45, ctx.currentTime + 0.018);
 
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.014);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(pitch, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(pitch * 0.45, ctx.currentTime + 0.018);
-
-        gain.gain.setValueAtTime(0.06, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.018);
-      }
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.018);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -300,9 +213,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Terminal Keypress Click:
-   * - Mechanical: Cherry MX Blue key clack with pitch jitter.
-   * - Sci-Fi: Holographic cyber-deck keystroke blip.
+   * Terminal Keypress Click: Cherry MX Blue key clack with pitch jitter.
    */
   public playKeyClick(): void {
     if (!this.isEnabled()) return;
@@ -312,25 +223,15 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(1900 + Math.random() * 200, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(900, ctx.currentTime + 0.012);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1200 + Math.random() * 300, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.015);
 
-        gain.gain.setValueAtTime(0.035, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.012);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(1200 + Math.random() * 300, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.015);
-
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.015);
-      }
+      gain.gain.setValueAtTime(0.045, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.015);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -341,9 +242,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Command Execution Tone:
-   * - Mechanical: Metallic bell chime (D5 -> A5).
-   * - Sci-Fi: Hyperdrive energy spool & beam discharge (160Hz -> 1200Hz).
+   * Command Execution Tone: Metallic bell chime (D5 -> A5).
    */
   public playExecute(): void {
     if (!this.isEnabled()) return;
@@ -353,25 +252,15 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "sawtooth";
-        osc.frequency.setValueAtTime(160, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.12);
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.04); // A5
 
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
-      } else {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.04); // A5
-
-        gain.gain.setValueAtTime(0.065, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      }
+      gain.gain.setValueAtTime(0.065, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -382,9 +271,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Winning Article Triumph Chime:
-   * - Mechanical: Acoustic celesta / music box victory arpeggio.
-   * - Sci-Fi: Futuristic synth pad chord with harmonic shimmer.
+   * Winning Article Triumph Chime: Acoustic celesta / music box victory arpeggio.
    */
   public playChime(notes: number[] = [523.25, 659.25, 783.99, 1046.5]): void {
     if (!this.isEnabled()) return;
@@ -394,32 +281,18 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
-
       notes.forEach((freq, i) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
 
-        if (profile === "scifi") {
-          osc.type = "triangle";
-          osc.frequency.setValueAtTime(freq * 1.5, ctx.currentTime + i * 0.05);
-          osc.frequency.exponentialRampToValueAtTime(freq, ctx.currentTime + i * 0.05 + 0.4);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.04);
 
-          gain.gain.setValueAtTime(0.06, ctx.currentTime + i * 0.05);
-          gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            ctx.currentTime + i * 0.05 + 0.7
-          );
-        } else {
-          osc.type = "sine";
-          osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.04);
-
-          gain.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.04);
-          gain.gain.exponentialRampToValueAtTime(
-            0.0001,
-            ctx.currentTime + i * 0.04 + 0.6
-          );
-        }
+        gain.gain.setValueAtTime(0.08, ctx.currentTime + i * 0.04);
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          ctx.currentTime + i * 0.04 + 0.6
+        );
 
         osc.connect(gain);
         gain.connect(ctx.destination);
@@ -484,12 +357,9 @@ class SoundFxEngine {
   }
 
   /**
-   * Launchpad Pad Synthesizer:
-   * Plays a distinct musical tone from a 16-note Pentatonic scale.
-   * - Mechanical: Warm acoustic celesta / marimba tone with organic resonant decay.
-   * - Sci-Fi: Neon synth wave with frequency modulated sub-harmonics and shimmer.
+   * Pentatonic Pad Synthesizer: Warm acoustic celesta / marimba tone with organic resonant decay.
    *
-   * @param padIndex Index from 0 to 15 corresponding to the 4x4 Launchpad grid.
+   * @param padIndex Index from 0 to 15.
    */
   public playPentatonicPad(padIndex: number): void {
     if (!this.isEnabled()) return;
@@ -499,7 +369,6 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const PENTATONIC_FREQS = [
         261.63, 293.66, 329.63, 392.00, 440.00, // C4, D4, E4, G4, A4
         523.25, 587.33, 659.25, 783.99, 880.00, // C5, D5, E5, G5, A5
@@ -510,22 +379,11 @@ class SoundFxEngine {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        // Subtle octave chirp
-        osc.frequency.exponentialRampToValueAtTime(freq * 1.02, ctx.currentTime + 0.04);
-        osc.frequency.exponentialRampToValueAtTime(freq, ctx.currentTime + 0.15);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
 
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
-      } else {
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.09, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
-      }
+      gain.gain.setValueAtTime(0.09, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -536,8 +394,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Quiz Correct Answer Feedback:
-   * Upward harmonic major triad chord.
+   * Quiz Correct Answer Feedback: Upward harmonic major triad chord.
    */
   public playQuizSuccess(): void {
     if (!this.isEnabled()) return;
@@ -567,8 +424,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Quiz Incorrect Answer Feedback:
-   * Low descending buzzer tone.
+   * Quiz Incorrect Answer Feedback: Low descending buzzer tone.
    */
   public playQuizError(): void {
     if (!this.isEnabled()) return;
@@ -596,9 +452,7 @@ class SoundFxEngine {
   }
 
   /**
-   * Mute Alert Feedback:
-   * - Mechanical: Latch snap lock/unlock.
-   * - Sci-Fi: Shield power-up / power-down grid tone.
+   * Mute Alert Feedback: Mechanical latch snap lock/unlock.
    */
   private playMuteAlert(isNowEnabled: boolean): void {
     this.vibrate(isNowEnabled ? [15, 20, 25] : [20]);
@@ -607,33 +461,19 @@ class SoundFxEngine {
       const ctx = this.getContext();
       if (!ctx) return;
 
-      const profile = this.getProfile();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
 
-      if (profile === "scifi") {
-        osc.type = "sawtooth";
-        if (isNowEnabled) {
-          osc.frequency.setValueAtTime(300, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1400, ctx.currentTime + 0.07);
-        } else {
-          osc.frequency.setValueAtTime(1200, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.07);
-        }
-        gain.gain.setValueAtTime(0.045, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+      osc.type = "sine";
+      if (isNowEnabled) {
+        osc.frequency.setValueAtTime(520, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1040, ctx.currentTime + 0.06);
       } else {
-        osc.type = "sine";
-        if (isNowEnabled) {
-          osc.frequency.setValueAtTime(520, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(1040, ctx.currentTime + 0.06);
-        } else {
-          osc.frequency.setValueAtTime(600, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.05);
-        }
-        gain.gain.setValueAtTime(0.055, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.05);
       }
+      gain.gain.setValueAtTime(0.055, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
 
       osc.connect(gain);
       gain.connect(ctx.destination);

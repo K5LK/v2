@@ -285,7 +285,7 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
           <button
             id="sound-fx-btn-mobile"
             type="button"
-            class="mobile-pref-btn flex-1"
+            class="mobile-pref-btn w-full"
             title={t("nav.soundFxToggle")}
             aria-label={t("nav.soundFxToggle")}
           >
@@ -302,29 +302,6 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
             </svg>
             <span id="sound-fx-label-mobile">
               {t("nav.soundFx")}
-            </span>
-          </button>
-
-          <!-- Sound Profile toggle -->
-          <button
-            id="sound-profile-btn-mobile"
-            type="button"
-            class="mobile-pref-btn flex-1"
-            title={t("nav.soundProfile")}
-            aria-label={t("nav.soundProfile")}
-          >
-            <svg
-              class="size-4 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.8"
-              aria-hidden="true"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-            </svg>
-            <span id="sound-profile-label-mobile">
-              {t("nav.soundProfileMech")}
             </span>
           </button>
         </div>

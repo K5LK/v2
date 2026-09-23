@@ -1,0 +1,63 @@
+---
+/**
+ * HeaderAccentPicker.astro
+ *
+ * Dedicated subcomponent for desktop header settings popover accent color palette swatches.
+ */
+import { useTranslations } from "@/i18n/utils";
+
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+---
+
+<div class="popover-row popover-row--accent">
+  <div class="popover-row-label">
+    <svg
+      class="size-3.5 shrink-0"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+      ></path>
+    </svg>
+    {t("nav.accentColor")}
+  </div>
+  <div class="accent-swatches">
+    <button
+      type="button"
+      data-accent-color="blue"
+      class="accent-swatch bg-[#008fec]"
+      title="Blue"
+      aria-label="Blue accent"></button>
+    <button
+      type="button"
+      data-accent-color="green"
+      class="accent-swatch bg-[#10b981]"
+      title="Green"
+      aria-label="Green accent"></button>
+    <button
+      type="button"
+      data-accent-color="purple"
+      class="accent-swatch bg-[#a855f7]"
+      title="Purple"
+      aria-label="Purple accent"></button>
+    <button
+      type="button"
+      data-accent-color="amber"
+      class="accent-swatch bg-[#f59e0b]"
+      title="Amber"
+      aria-label="Amber accent"></button>
+    <button
+      type="button"
+      data-accent-color="rose"
+      class="accent-swatch bg-[#f43f5e]"
+      title="Rose"
+      aria-label="Rose accent"></button>
+  </div>
+</div>
