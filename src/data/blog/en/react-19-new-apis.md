@@ -12,8 +12,6 @@ draft: false
 
 React 19 is the most important update since the introduction of Hooks. It doesn't bring radical new concepts — it brings the definitive solution to a problem we solved a thousand times in different ways: **handling forms and mutations**.
 
-## Table of contents
-
 ## The problem React 19 solves
 
 Before React 19, a form with loading feedback, error handling, and optimistic updating required this:

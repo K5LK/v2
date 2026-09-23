@@ -21,8 +21,6 @@ Durante años, los asistentes de IA actuaron como oráculos: tú preguntabas, el
   </figcaption>
 </figure>
 
-## Tabla de contenido
-
 ## ¿Qué es un agente de IA?
 
 Un agente es un sistema que percibe su entorno, razona sobre él y toma acciones para lograr un objetivo. Lo que cambió en los últimos años es que los LLM (modelos de lenguaje grande) ahora actúan como el "cerebro" del agente, mientras que las herramientas externas —motores de búsqueda, intérpretes de código, API— son sus "manos".

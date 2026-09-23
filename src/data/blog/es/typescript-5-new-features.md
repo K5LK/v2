@@ -11,8 +11,6 @@ draft: false
 
 TypeScript continúa evolucionando a un ritmo rápido. Las versiones 5.x trajeron cambios que van más allá de las mejoras de rendimiento: rediseñan patrones que hemos estado usando durante años.
 
-## Tabla de contenido
-
 ## Decoradores estándar (TC39 Stage 3)
 
 Finalmente. Después de años con la versión experimental, TypeScript 5.0 adoptó los **decoradores estándar** de TC39. La sintaxis es similar pero la semántica cambió bastante.

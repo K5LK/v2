@@ -11,8 +11,6 @@ draft: false
 
 TypeScript continues to evolve at a rapid pace. The 5.x versions brought changes that go beyond performance improvements: they redefine patterns we have been using for years.
 
-## Table of contents
-
 ## Standard decorators (TC39 Stage 3)
 
 Finally. After years with the experimental version, TypeScript 5.0 adopted the **standard decorators** from TC39. The syntax is similar but the semantics changed quite a bit.

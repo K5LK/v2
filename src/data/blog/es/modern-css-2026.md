@@ -12,8 +12,6 @@ draft: false
 
 Durante años, la respuesta a "¿cómo hago X en CSS?" era "usa JavaScript". En 2026 esa respuesta ya no se aplica en la mayoría de los casos. Tres características en particular redibujaron el mapa del diseño en el navegador.
 
-## Tabla de contenido
-
 ## Container Queries: responder al contenedor, no a la pantalla
 
 Las media queries responden al ancho del _viewport_ (la pantalla). El problema: un componente puede vivir en una columna estrecha o en una ancha según el diseño del padre. Las **container queries** resuelven esto.

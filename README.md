@@ -182,19 +182,12 @@ description: "Short description for SEO and cards"
 tags: ["astro", "dev"]
 featured: false # highlight on the home page
 draft: false # hidden in production
-timezone: "America/Guatemala" # overrides SITE.timezone
-hideEditPost: false
-faqs: # optional — list of FAQs for structured data (JSON-LD FAQPage)
-  - question: "Question 1"
-    answer: "Answer to question 1."
-  - question: "Question 2"
-    answer: "Answer to question 2."
 ---
 ```
 
 **MDX**: JSX components can be used directly. `<GalleryEmbed>` is available without importing it (see next section).
 
-**Table of Contents**: add `## Table of contents` to the post body to auto-generate the TOC with `remark-toc` + `remark-collapse`.
+**Table of Contents**: Automatically rendered in the desktop sidebar with dynamic scrollspy highlighting.
 
 **Annotated code blocks** (via Shiki transformers):
 

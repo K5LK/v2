@@ -12,8 +12,6 @@ draft: false
 
 React 19 es la actualización más importante desde la introducción de los Hooks. No trae conceptos nuevos y radicales — trae la solución definitiva a un problema que resolvimos mil veces de diferentes maneras: **el manejo de formularios y mutaciones**.
 
-## Tabla de contenido
-
 ## El problema que resuelve React 19
 
 Antes de React 19, un formulario con retroalimentación de carga, manejo de errores y actualización optimista requería esto:

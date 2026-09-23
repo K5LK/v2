@@ -21,8 +21,6 @@ For years, AI assistants acted as oracles: you asked, they answered. In 2026 the
   </figcaption>
 </figure>
 
-## Table of contents
-
 ## What is an AI agent?
 
 An agent is a system that perceives its environment, reasons about it, and takes actions to achieve a goal. What changed in recent years is that LLMs (Large Language Models) now act as the agent's "brain", while external tools —search engines, code interpreters, APIs— are its "hands".

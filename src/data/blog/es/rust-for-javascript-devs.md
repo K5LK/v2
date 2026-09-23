@@ -12,8 +12,6 @@ draft: false
 
 Rust apareció en el radar de los desarrolladores web hace años, pero la adopción fue lenta. En 2026 el panorama cambió: Rust impulsa herramientas críticas en el ecosistema JS (Biome, Oxc, Rolldown, el compilador SWC) y WebAssembly lo hace indispensable en el frontend. Es hora de aprenderlo.
 
-## Tabla de contenido
-
 ## El mayor cambio de mentalidad: ownership
 
 En JavaScript, el recolector de basura (garbage collector) gestiona la memoria. En Rust, la responsabilidad pasa al compilador a través del sistema de **ownership** (propiedad).
