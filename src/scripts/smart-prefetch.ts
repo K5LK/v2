@@ -1,6 +1,30 @@
 // Smart prefetch - respects saveData and slow connections
+
+interface NetworkInformation extends EventTarget {
+  readonly saveData?: boolean;
+  readonly effectiveType?: "slow-2g" | "2g" | "3g" | "4g";
+}
+
+interface NavigatorWithConnection extends Navigator {
+  readonly connection?: NetworkInformation;
+}
+
+let activeObserver: MutationObserver | null = null;
+
+function cleanupObserver() {
+  if (activeObserver) {
+    activeObserver.disconnect();
+    activeObserver = null;
+  }
+}
+
+document.addEventListener("astro:before-swap", cleanupObserver);
+
 document.addEventListener("astro:page-load", () => {
-  const conn = (navigator as any).connection;
+  cleanupObserver();
+
+  const nav = navigator as NavigatorWithConnection;
+  const conn = nav.connection;
 
   // Disable prefetch entirely if user has save-data enabled
   if (conn?.saveData) {
@@ -22,15 +46,11 @@ document.addEventListener("astro:page-load", () => {
   if (conn?.effectiveType === "3g") {
     // Astro's viewport observer already handles this,
     // but we intercept and remove viewport-triggered prefetches
-    const observer = new MutationObserver(mutations => {
+    activeObserver = new MutationObserver(mutations => {
       for (const m of mutations) {
         for (const node of m.addedNodes) {
           if (node instanceof HTMLLinkElement && node.rel === "prefetch") {
             // Only keep hover-triggered prefetches (they have data-astro-prefetch-hover or are hovered)
-            // Astro adds data-astro-prefetch or links via viewport/hover.
-            // If it is viewport prefetch, we remove it.
-            // Note: Astro's client prefetch script has internal logic. If we remove the link tag,
-            // the browser stops prefetching.
             if (!node.hasAttribute("data-astro-prefetch-hover")) {
               node.remove();
             }
@@ -38,6 +58,6 @@ document.addEventListener("astro:page-load", () => {
         }
       }
     });
-    observer.observe(document.head, { childList: true });
+    activeObserver.observe(document.head, { childList: true });
   }
 });

@@ -18,6 +18,7 @@ if (!SITE.showArchives) {
 import { useTranslations } from "@/i18n/utils";
 const locale = Astro.currentLocale || "en";
 const t = useTranslations(locale);
+const prefix = locale === "es" ? "/es" : "";
 
 const [blogPosts, galleryPosts] = await Promise.all([
   getCollection(
@@ -134,7 +135,7 @@ let postIndex = 0;
                         postIndex++;
                         return (
                           <a
-                            href={getEntryPath(post)}
+                            href={prefix + getEntryPath(post)}
                             class="post-card group"
                             data-archive-card
                             style={
