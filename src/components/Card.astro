@@ -4,6 +4,7 @@ import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
 import { slugifyStr } from "@/utils/slugify";
 import { getEntryPath, getGallerySlug } from "@/utils/contentEntry";
+import { getFirstGalleryImage } from "@/utils/gallery";
 import { getReadingTime } from "@/utils/readingTime";
 import Datetime from "./Datetime.astro";
 import IconGallery from "@/assets/icons/IconGallery.svg";
@@ -50,19 +51,9 @@ if (SITE.showCoverImages) {
     if (coverImage) {
       coverSrc = coverImage;
     } else {
-      // Load all gallery images at build-time (same pattern as galleries/index.astro)
-      const allGalleryImages = import.meta.glob<{ default: ImageMetadata }>(
-        "/src/data/galleries/**/*.{jpg,jpeg,png,webp,avif,gif,JPG,JPEG,PNG,WEBP}",
-        { eager: true }
-      );
       const gallerySlug = getGallerySlug(id);
       const galleryLang = id.startsWith("es/") ? "es" : "en";
-      const firstImage = Object.entries(allGalleryImages)
-        .filter(([path]) =>
-          path.startsWith(`/src/data/galleries/${galleryLang}/${gallerySlug}/`)
-        )
-        .sort(([a], [b]) => a.localeCompare(b))
-        .at(0)?.[1]?.default;
+      const firstImage = getFirstGalleryImage(gallerySlug, galleryLang);
       if (firstImage) {
         coverSrc = firstImage;
       }
