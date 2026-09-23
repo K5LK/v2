@@ -1,10 +1,10 @@
 ---
 import { getCollection } from "astro:content";
 import type { GetStaticPathsOptions } from "astro";
-import Main from "@/layouts/Main.astro";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
 import Card from "@/components/Card.astro";
 import Pagination from "@/components/Pagination.astro";
 import getUniqueTags from "@/utils/getUniqueTags";
@@ -70,11 +70,13 @@ const nextURL = page.url.next
   next={nextURL}
 >
   <Header />
-  <Main
-    pageTitle={[`${t("tags.tag")}:`, `${tagName}`]}
-    titleTransition={tag}
-    pageDesc={`${t("tags.articlesWith")} "${tagName}".`}
-  >
+  <Breadcrumb />
+  <main id="main-content" class="app-layout pb-4">
+    <h1 class="text-2xl font-semibold sm:text-3xl">
+      {t("tags.tag")}:
+      <span transition:name={tag}>{tagName}</span>
+    </h1>
+    <p class="mt-2 mb-6 italic">{t("tags.articlesWith")} "{tagName}".</p>
     <ul>
       {
         page.data.map((data, index) => (
@@ -86,7 +88,7 @@ const nextURL = page.url.next
         ))
       }
     </ul>
-  </Main>
+  </main>
 
   <Pagination {page} />
 
