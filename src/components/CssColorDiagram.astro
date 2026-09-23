@@ -101,6 +101,42 @@
 </style>
 
 <script>
+  interface VoronoiSite {
+    x: number;
+    y: number;
+  }
+
+  interface VoronoiPoint {
+    x: number;
+    y: number;
+  }
+
+  interface VoronoiHalfEdge {
+    getStartpoint(): VoronoiPoint;
+    getEndpoint(): VoronoiPoint;
+  }
+
+  interface VoronoiCell {
+    site: VoronoiSite;
+    halfedges: VoronoiHalfEdge[];
+    closeMe?: boolean;
+  }
+
+  interface VoronoiDiagramResult {
+    cells: VoronoiCell[];
+  }
+
+  interface VoronoiInstance {
+    compute(
+      sites: VoronoiSite[],
+      bbox: { xl: number; xr: number; yt: number; yb: number }
+    ): VoronoiDiagramResult;
+  }
+
+  interface VoronoiConstructor {
+    new (): VoronoiInstance;
+  }
+
   function initVoronoiDiagram() {
     const svg = document.querySelector(".voronoi-svg") as SVGElement | null;
     const preview = document.getElementById("voronoi-preview");
@@ -112,22 +148,40 @@
 
     function loadScript(src: string): Promise<void> {
       return new Promise((resolve, reject) => {
-        if ((window as any).Voronoi) {
+        const hasVoronoi = Boolean(
+          (window as unknown as { Voronoi?: VoronoiConstructor }).Voronoi
+        );
+        if (hasVoronoi) {
           resolve();
           return;
         }
 
-        const existingScript = document.querySelector(`script[src="${src}"]`);
+        const existingScript = document.querySelector<HTMLScriptElement>(
+          `script[src="${src}"]`
+        );
         if (existingScript) {
-          (existingScript as any).onload = resolve;
-          (existingScript as any).onerror = reject;
+          if (
+            (window as unknown as { Voronoi?: VoronoiConstructor }).Voronoi
+          ) {
+            resolve();
+            return;
+          }
+          existingScript.addEventListener("load", () => resolve(), {
+            once: true,
+          });
+          existingScript.addEventListener(
+            "error",
+            () => reject(new Error(`Failed to load ${src}`)),
+            { once: true }
+          );
           return;
         }
 
         const script = document.createElement("script");
         script.src = src;
+        script.async = true;
         script.onload = () => resolve();
-        script.onerror = reject;
+        script.onerror = () => reject(new Error(`Failed to load ${src}`));
         document.head.appendChild(script);
       });
     }
@@ -136,8 +190,8 @@
       .then(() => {
         initializeDiagram(svg, preview);
       })
-      .catch(error => {
-        console.error("Error loading Voronoi library:", error);
+      .catch(() => {
+        // Silently handled without console errors
       });
   }
 
@@ -286,68 +340,71 @@
     };
 
     function rgb2hsv(r: number, g: number, b: number) {
-      let v = Math.max(r, g, b),
-        c = v - Math.min(r, g, b);
-      let h =
+      const v = Math.max(r, g, b);
+      const c = v - Math.min(r, g, b);
+      const h =
         c &&
-        (v == r ? (g - b) / c : v == g ? 2 + (b - r) / c : 4 + (r - g) / c);
+        (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
       return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
     }
 
     const radius = 512;
     const cx = radius;
     const cy = radius;
-    const styleSheet = document.styleSheets[0];
 
     function renderWheel() {
-      let colorsBySite: Record<string, string> = {};
-      let sites: { x: number; y: number }[] = [];
+      const VoronoiClass = (
+        window as unknown as { Voronoi?: VoronoiConstructor }
+      ).Voronoi;
+      if (!VoronoiClass) return;
+
+      const colorsBySite: Record<string, string> = {};
+      const sites: VoronoiSite[] = [];
       Object.entries(newcolors).forEach(([name, color]) => {
-        let [r, g, b] = color;
-        let [h, s, v] = rgb2hsv(r / 255, g / 255, b / 255);
+        const [r, g, b] = color;
+        const [h, s, v] = rgb2hsv(r / 255, g / 255, b / 255);
 
-        let colorRadius = (s + v / 5) * 0.75 * radius;
-        let colorAngle = (h / 360) * 2 * Math.PI;
+        const colorRadius = (s + v / 5) * 0.75 * radius;
+        const colorAngle = (h / 360) * 2 * Math.PI;
 
-        let x = Math.cos(colorAngle) * colorRadius + cx;
-        let y = Math.sin(colorAngle) * colorRadius + cy;
-        sites.push({ x: x, y: y });
+        const x = Math.cos(colorAngle) * colorRadius + cx;
+        const y = Math.sin(colorAngle) * colorRadius + cy;
+        sites.push({ x, y });
         colorsBySite[[x, y].toString()] = name;
       });
 
-      let voronoi = new (window as any).Voronoi().compute(sites, {
+      const voronoi = new VoronoiClass().compute(sites, {
         xl: 0,
         xr: 1024,
         yt: 0,
         yb: 1024,
       });
-      voronoi.cells.forEach((cell: any) => {
-        if (cell.closeMe) return;
-        let colorName = colorsBySite[[cell.site.x, cell.site.y].toString()];
-        if (!colorName) return;
-        let [r, g, b] = newcolors[colorName];
 
-        let c = document.createElementNS(
+      voronoi.cells.forEach(cell => {
+        if (cell.closeMe) return;
+        const colorName = colorsBySite[[cell.site.x, cell.site.y].toString()];
+        if (!colorName) return;
+        const [r, g, b] = newcolors[colorName];
+
+        const c = document.createElementNS(
           "http://www.w3.org/2000/svg",
           "polygon"
         );
         c.setAttribute("data-color", colorName);
-        c.setAttribute("mask", "url(#circle-mask)");
 
         let points = "";
-        cell.halfedges.forEach((edge: any) => {
-          let s = edge.getStartpoint();
+        cell.halfedges.forEach(edge => {
+          const s = edge.getStartpoint();
           points += `${s.x} ${s.y}, `;
         });
         points = points.replace(/, $/, "");
         c.setAttribute("points", points);
 
+        const rgb = `rgb(${r}, ${g}, ${b})`;
+        c.setAttribute("fill", rgb);
+        c.setAttribute("stroke", rgb);
+
         svg.appendChild(c);
-        let rgb = `rgb(${r}, ${g}, ${b})`;
-        styleSheet.insertRule(
-          `[data-color='${colorName}'] { fill: ${rgb}; stroke: ${rgb}; }`,
-          styleSheet.cssRules.length
-        );
       });
     }
 
@@ -363,11 +420,11 @@
     }
 
     function componentToHex(c: number) {
-      var hex = c.toString(16);
-      return hex.length == 1 ? "0" + hex : hex;
+      const hex = c.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
     }
 
-    function rgbToHexx(r: number, g: number, b: number) {
+    function rgbToHex(r: number, g: number, b: number) {
       return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
@@ -377,53 +434,71 @@
         preview.innerHTML = "";
         return;
       }
-      let [r, g, b] = newcolors[color];
+      const [r, g, b] = newcolors[color];
 
       preview.innerHTML = `
         <div class="voronoi-name-container">
             <div class="voronoi-name-container2">
-                <div class="voronoi-color" style="background-color: ${rgbToHexx(r, g, b)};">&nbsp;</div>
+                <div class="voronoi-color" style="background-color: ${rgbToHex(r, g, b)};">&nbsp;</div>
                 <span class="voronoi-name">${color}</span>
             </div>
         </div>
         `;
     }
 
-    svg.addEventListener("mouseover", e => {
-      let el = e.target as SVGElement;
-      if (el.tagName != "polygon") return;
-      if (!previewLocked) {
+    const abortController = new AbortController();
+    const { signal } = abortController;
+    document.addEventListener("astro:before-swap", () => abortController.abort(), {
+      once: true,
+    });
+
+    svg.addEventListener(
+      "mouseover",
+      e => {
+        const el = e.target as SVGElement;
+        if (el.tagName !== "polygon") return;
+        if (!previewLocked) {
+          activateColor(el);
+        }
+      },
+      { signal }
+    );
+
+    svg.addEventListener(
+      "mouseout",
+      e => {
+        const el = e.target as SVGElement;
+        if (el.tagName !== "polygon") return;
+        if (!previewLocked) {
+          renderPreview(null);
+          el.removeAttribute("style");
+        }
+      },
+      { signal }
+    );
+
+    document.body.addEventListener(
+      "click",
+      e => {
+        const el = e.target as SVGElement;
+
+        if (preview.contains(el)) return;
+
+        svg.querySelectorAll("polygon[style]").forEach(item => {
+          (item as SVGElement).removeAttribute("style");
+        });
+
+        if (el.tagName !== "polygon") {
+          previewLocked = false;
+          renderPreview(null);
+          return;
+        }
+
+        previewLocked = true;
         activateColor(el);
-      }
-    });
-
-    svg.addEventListener("mouseout", e => {
-      let el = e.target as SVGElement;
-      if (el.tagName != "polygon") return;
-      if (!previewLocked) {
-        renderPreview(null);
-        el.removeAttribute("style");
-      }
-    });
-
-    document.body.addEventListener("click", e => {
-      let el = e.target as SVGElement;
-
-      if (preview.contains(el)) return;
-
-      svg.querySelectorAll("polygon[style]").forEach(item => {
-        (item as SVGElement).removeAttribute("style");
-      });
-
-      if (el.tagName != "polygon") {
-        previewLocked = false;
-        renderPreview(null);
-        return;
-      }
-
-      previewLocked = true;
-      activateColor(el);
-    });
+      },
+      { signal }
+    );
   }
 
   // Inicializar en la carga inicial y también con transiciones de página de Astro
