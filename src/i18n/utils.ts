@@ -1,10 +1,5 @@
 import { ui, defaultLang, type Lang } from "./ui";
 
-export function getLangFromUrl(url: URL): Lang {
-  const [, lang] = url.pathname.split("/");
-  if (lang && lang in ui) return lang as Lang;
-  return defaultLang;
-}
 
 export function useTranslations(lang?: string | null) {
   const validLang: Lang = (lang && lang in ui) ? (lang as Lang) : defaultLang;

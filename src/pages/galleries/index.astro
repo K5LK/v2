@@ -10,14 +10,14 @@ import GalleryCard from "@/components/GalleryCard.astro";
 import { SITE } from "@/config";
 import { getGallerySlug } from "@/utils/contentEntry";
 
-import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { useTranslations } from "@/i18n/utils";
 
 if (!SITE.showGalleries) {
   return Astro.redirect("/404");
 }
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
 
 // Load all images from all galleries at build-time
 const allImages = import.meta.glob<{ default: ImageMetadata }>(
@@ -30,7 +30,7 @@ function getGalleryImages(slug: string): ImageMetadata[] {
   return Object.entries(allImages)
     .filter(
       ([path]) =>
-        path.startsWith(`/src/data/galleries/${lang}/${slug}/`) &&
+        path.startsWith(`/src/data/galleries/${locale}/${slug}/`) &&
         !path.endsWith("index.md") &&
         !path.endsWith("index.mdx")
     )
@@ -40,7 +40,7 @@ function getGalleryImages(slug: string): ImageMetadata[] {
 
 const rawGalleries = await getCollection(
   "galleries",
-  ({ id, data }) => !data.draft && id.startsWith(`${lang}/`)
+  ({ id, data }) => !data.draft && id.startsWith(`${locale}/`)
 );
 
 const galleries = rawGalleries

@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import type { ImageMetadata } from "astro";
 import { Image } from "astro:assets";
 import Datetime from "./Datetime.astro";
-import { getLangFromUrl, useTranslations } from "@/i18n/utils";
+import { useTranslations } from "@/i18n/utils";
 
 type Props = {
   gallery: CollectionEntry<"galleries">;
@@ -25,9 +25,9 @@ const {
 const { title, description, pubDatetime, coverImage } = gallery.data;
 const coverSrc = coverImage ?? fallbackImage;
 
-const lang = getLangFromUrl(Astro.url);
-const t = useTranslations(lang);
-const prefix = lang === "es" ? "/es" : "";
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+const prefix = locale === "es" ? "/es" : "";
 ---
 
 <a
