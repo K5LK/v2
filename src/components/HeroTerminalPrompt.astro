@@ -168,7 +168,6 @@ const { prefix, path, suffix } = SITE.heroTerminalPrompt;
         <span class="text-[10px] text-foreground/45 uppercase tracking-wider font-bold mr-1">Quick:</span>
         <button type="button" class="term-chip" data-cmd="help"><span class="opacity-70">&gt;_</span> help</button>
         <button type="button" class="term-chip" data-cmd="neofetch"><span>🖥️</span> neofetch</button>
-        <button type="button" class="term-chip" data-cmd="widget list"><span>📅</span> widget</button>
         <button type="button" class="term-chip" data-cmd="matrix"><span>🕶️</span> matrix</button>
         <button type="button" class="term-chip" data-cmd="random"><span>🎲</span> random</button>
         <button type="button" class="term-chip" data-cmd="quote"><span>💬</span> quote</button>
@@ -519,7 +518,6 @@ const { prefix, path, suffix } = SITE.heroTerminalPrompt;
               <div><span class="term-cyan-text">ping</span>      - ${isEs ? "Prueba de latencia y estado (ej: ping google.com)" : "Test latency & stats (e.g. ping google.com)"}</div>
               <div><span class="term-cyan-text">cat</span>       - ${isEs ? "Gatito ASCII o lectura de archivos (ej: cat .env)" : "ASCII kitty or inspect files (e.g. cat .env)"}</div>
               <div><span class="term-cyan-text">neofetch</span>  - ${isEs ? "Información del sistema y blog" : "System and blog status summary"}</div>
-              <div><span class="term-cyan-text">widget</span>    - ${isEs ? "Inspecciona o cambia el widget diario interactivo" : "Inspect or switch the active daily hero widget"}</div>
               <div><span class="term-cyan-text">audio</span>     - ${isEs ? "Alterna reproducción Lo-Fi" : "Toggle Lo-Fi audio stream"}</div>
               <div><span class="term-cyan-text">whoami</span>    - ${isEs ? "Información sobre el autor y el blog" : "About author & blog info"}</div>
               <div><span class="term-cyan-text">clear</span>     - ${isEs ? "Limpia la pantalla" : "Clear terminal screen"}</div>
@@ -671,57 +669,6 @@ const { prefix, path, suffix } = SITE.heroTerminalPrompt;
           `, "term-res-info");
           break;
 
-        case "widget":
-        case "widgets": {
-          const sub = args.toLowerCase();
-          const WIDGET_MAP: Record<string, number> = {
-            bento: 1, mon: 1, lunes: 1, "1": 1,
-            code: 2, tue: 2, martes: 2, "2": 2,
-            physics: 3, particles: 3, gravity: 3, lab: 3, audio: 3, wed: 3, miercoles: 3, "3": 3,
-            life: 4, thu: 4, jueves: 4, "4": 4,
-            spotlight: 5, fri: 5, viernes: 5, "5": 5,
-            launchpad: 6, sat: 6, sabado: 6, "6": 6,
-            radar: 0, sun: 0, domingo: 0, "0": 0, "7": 0,
-          };
-
-          if (sub === "quiz" || sub === "unlock") {
-            appendOutput(`<div>${isEs ? "Abriendo el desafío de desbloqueo del Modo Explorador... 🧩" : "Opening Explorer Mode unlock quiz... 🧩"}</div>`, "term-res-info");
-            window.dispatchEvent(new CustomEvent("hero-quiz:open"));
-          } else if (sub === "list") {
-            appendOutput(`
-              <div class="space-y-1 font-firacode text-xs">
-                <div class="text-accent font-bold">${isEs ? "📅 Widgets Diarios Disponibles:" : "📅 Available Daily Widgets:"}</div>
-                <div><span class="term-cyan-text">1. bento</span>     - ${isEs ? "Lunes: Bento Dev Deck (Reloj GT, status, stack)" : "Monday: Bento Dev Deck (GT clock, status, stack)"}</div>
-                <div><span class="term-cyan-text">2. code</span>      - ${isEs ? "Martes: Live Code Sandbox (Typewriter & Run)" : "Tuesday: Live Code Sandbox (Typewriter & Run)"}</div>
-                <div><span class="term-cyan-text">3. physics</span>   - ${isEs ? "Miércoles: Quantum Physics & Gravity Lab (60 FPS)" : "Wednesday: Quantum Physics & Gravity Lab (60 FPS)"}</div>
-                <div><span class="term-cyan-text">4. life</span>      - ${isEs ? "Jueves: Conway's Game of Life (Dibujo táctil)" : "Thursday: Conway's Game of Life (Interactive)"}</div>
-                <div><span class="term-cyan-text">5. spotlight</span> - ${isEs ? "Viernes: 3D Spotlight Card (Post destacado)" : "Friday: 3D Spotlight Card (Featured post)"}</div>
-                <div><span class="term-cyan-text">6. launchpad</span> - ${isEs ? "Sábado: Mini Sound Launchpad (Sintetizador 4x4)" : "Saturday: Mini Sound Launchpad (4x4 synth)"}</div>
-                <div><span class="term-cyan-text">7. radar</span>     - ${isEs ? "Domingo: Dev Radar & Tech Pulse (360°)" : "Sunday: Dev Radar & Tech Pulse (360°)"}</div>
-                <div class="text-foreground/50 pt-1">${isEs ? "Uso: widget set <nombre|1-7> (ej: widget set physics)" : "Usage: widget set <name|1-7> (e.g. widget set physics)"}</div>
-              </div>
-            `);
-          } else if (sub.startsWith("set ")) {
-            const target = sub.replace("set ", "").trim();
-            if (target in WIDGET_MAP) {
-              const day = WIDGET_MAP[target];
-              window.dispatchEvent(new CustomEvent("herowidget:change", { detail: { day } }));
-              appendOutput(`<div>${isEs ? "✨ Widget del Hero cambiado exitosamente a:" : "✨ Hero widget successfully switched to:"} <strong class="text-accent uppercase">${target}</strong></div>`, "term-res-success");
-            } else {
-              appendOutput(`<div>${isEs ? "Widget desconocido. Escribe 'widget list' para ver las opciones." : "Unknown widget. Type 'widget list' to view available options."}</div>`, "term-res-error");
-            }
-          } else {
-            appendOutput(`
-              <div class="space-y-1">
-                <div>${isEs ? "Comando de gestión de widgets del Hero:" : "Hero widget management command:"}</div>
-                <div>- <span class="term-cyan-text">widget list</span>: ${isEs ? "Lista los 7 widgets diarios" : "List all 7 daily widgets"}</div>
-                <div>- <span class="term-cyan-text">widget set &lt;nombre&gt;</span>: ${isEs ? "Cambia el widget activo (ej: widget set launchpad)" : "Switch active widget (e.g. widget set launchpad)"}</div>
-                <div>- <span class="term-cyan-text">widget quiz</span>: ${isEs ? "Lanza el quiz para desbloquear el Modo Explorador" : "Launch riddle to unlock Explorer Mode"}</div>
-              </div>
-            `, "term-res-info");
-          }
-          break;
-        }
 
         case "clear":
         case "cls":

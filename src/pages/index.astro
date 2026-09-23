@@ -16,7 +16,7 @@ import { SOCIALS } from "@/constants";
 import IntroAudio from "@/components/IntroAudio.astro";
 import SurpriseMeButton, { type RandomPostItem } from "@/components/SurpriseMeButton.astro";
 import HeroTerminalPrompt from "@/components/HeroTerminalPrompt.astro";
-import HeroDailyWidget from "@/components/hero/HeroDailyWidget.astro";
+import HeroBento from "@/components/HeroBento.astro";
 import { useTranslations } from "@/i18n/utils";
 
 const locale = Astro.currentLocale || "en";
@@ -133,9 +133,9 @@ const randomPostsPool: RandomPostItem[] = sortedPosts.map(entry => ({
           </div>
         </div>
 
-        <!-- Right Column: Daily Rotating Hero Widget (5 cols) -->
+        <!-- Right Column: Hero Bento Deck (5 cols) -->
         <div class="lg:col-span-5 flex flex-col justify-center">
-          <HeroDailyWidget featuredPost={featuredPosts[0] || sortedPosts[0]} />
+          <HeroBento />
         </div>
       </div>
     </section>

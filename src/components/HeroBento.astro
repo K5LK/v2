@@ -1,0 +1,366 @@
+---
+/**
+ * HeroBento.astro
+ *
+ * Streamlined, high-performance Bento Dev Deck for the right column of the homepage hero.
+ * Features:
+ * - Real-time 24-hour clock formatted to Guatemala timezone (America/Guatemala).
+ * - Live status indicator with glowing green pulse.
+ * - Current Focus / Architecture highlights card with direct link to /about.
+ * - Interactive Tech Matrix with dynamic module inspection.
+ * - Compact GitHub-style activity contribution pulse heatmap.
+ * - Lightweight, zero-FOUC, zero-canvas, zero-bloat, fully typed.
+ */
+import { useTranslations } from "@/i18n/utils";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+const prefix = locale === "es" ? "/es" : "";
+const isEs = locale === "es";
+const aboutHref = `${prefix}/about`;
+
+const TECH_STACK = [
+  {
+    name: "Astro 5",
+    icon: "🚀",
+    desc: isEs ? "Framework ultra-rápido de islas y zero-JS" : "Ultra-fast islands architecture & zero JS core",
+  },
+  {
+    name: "TypeScript",
+    icon: "🔷",
+    desc: isEs ? "Tipado estático seguro y arquitectura limpia" : "Static type safety and robust architecture",
+  },
+  {
+    name: "AI Agents",
+    icon: "⚡",
+    desc: isEs ? "Flujos autónomos y herramientas con LLMs" : "Autonomous agentic workflows & tooling",
+  },
+  {
+    name: "Tailwind v4",
+    icon: "🎨",
+    desc: isEs ? "Diseño moderno con CSS nativo y tokens" : "Modern design system with native CSS tokens",
+  },
+  {
+    name: "Pagefind",
+    icon: "🔍",
+    desc: isEs ? "Búsqueda offline instantánea en el cliente" : "Sub-10ms offline client-side search index",
+  },
+  {
+    name: "Web Audio",
+    icon: "🔊",
+    desc: isEs ? "Síntesis interactiva y efectos de sonido" : "Interactive web audio effects & soundscapes",
+  },
+];
+---
+
+<div class:list={["hero-bento-wrapper relative w-full flex flex-col justify-center select-none", className]}>
+  <!-- Ambient Ethereal Backlight Aura -->
+  <div class="hero-bento-aura pointer-events-none absolute -inset-3 sm:-inset-5 -z-10 rounded-3xl opacity-60 blur-2xl sm:blur-3xl transition-all duration-700" aria-hidden="true"></div>
+
+  <!-- Bento Deck Container Frame -->
+  <div class="hero-bento-card relative flex flex-col w-full rounded-3xl border border-border/25 bg-card/40 p-3 sm:p-4 text-foreground shadow-lg backdrop-blur-xl transition-all duration-300 hover:border-accent/35 gap-3">
+    
+    <!-- Top Row: 24h Live Clock & Status Badge -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <!-- 24h Live Timezone Card -->
+      <div class="bento-tile flex items-center justify-between px-3 py-2 rounded-2xl border border-border/20 bg-muted/10 min-w-0 transition-all duration-200 hover:border-accent/30">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="flex size-6 shrink-0 items-center justify-center rounded-lg bg-accent/10 border border-accent/20 text-accent text-xs">
+            🕒
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="text-[9px] uppercase font-bold tracking-wider opacity-50 truncate">
+              {t("heroWidget.bento.timezone")}
+            </span>
+            <span id="bento-live-clock" class="font-firacode text-xs sm:text-sm font-bold text-foreground tracking-tight" aria-live="off">
+              --:--:--
+            </span>
+          </div>
+        </div>
+        <span class="text-[9px] font-firacode px-1.5 py-0.5 rounded bg-muted/20 border border-border/20 opacity-60 shrink-0">
+          24H
+        </span>
+      </div>
+
+      <!-- Status Pulse Card -->
+      <div class="bento-tile flex items-center gap-2.5 px-3 py-2 rounded-2xl border border-border/20 bg-muted/10 min-w-0 transition-all duration-200 hover:border-emerald-500/30">
+        <span class="relative flex h-2.5 w-2.5 shrink-0 ml-1">
+          <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+        </span>
+        <div class="flex flex-col min-w-0 overflow-hidden">
+          <span class="text-[9px] uppercase font-bold tracking-wider opacity-50">Status</span>
+          <span class="text-xs font-semibold text-foreground truncate" title={t("heroWidget.bento.status")}>
+            {t("heroWidget.bento.status")}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Row: Current Focus & Architecture Highlights Card -->
+    <div
+      class="bento-tile group relative flex flex-col justify-between p-3 sm:p-3.5 rounded-2xl border border-border/20 bg-accent/5 transition-all duration-200 hover:border-accent/40 hover:bg-accent/10"
+    >
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-accent/15 border border-accent/30 text-accent">
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
+            <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent"></span>
+          </span>
+          <span>{t("heroWidget.bento.focusTag")}</span>
+        </span>
+        <span class="text-[10px] font-firacode text-foreground/50 tracking-wider">
+          Astro 5 • Edge • AI
+        </span>
+      </div>
+
+      <div class="space-y-1 mb-2">
+        <h3 class="font-firacode text-xs sm:text-sm font-semibold text-foreground tracking-tight leading-snug">
+          {t("heroWidget.bento.focusTitle")}
+        </h3>
+        <p class="text-[11px] sm:text-xs text-foreground/70 leading-relaxed line-clamp-2">
+          {t("heroWidget.bento.focusDesc")}
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-border/15 gap-2">
+        <div class="flex items-center gap-2 text-[10px] font-firacode text-foreground/60">
+          <span class="inline-flex items-center gap-1">
+            <span class="size-1.5 rounded-full bg-emerald-500"></span>
+            <span>100 Perf</span>
+          </span>
+          <span class="opacity-30">•</span>
+          <span class="inline-flex items-center gap-1">
+            <span class="size-1.5 rounded-full bg-accent"></span>
+            <span>Zero-JS Core</span>
+          </span>
+        </div>
+        <a
+          href={aboutHref}
+          class="inline-flex items-center gap-1 text-[11px] font-semibold text-accent hover:underline decoration-dashed underline-offset-2 transition-all group-hover:translate-x-0.5"
+          aria-label={t("heroWidget.bento.aboutLink")}
+        >
+          <span>{t("heroWidget.bento.aboutLink")}</span>
+          <span class="text-xs">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Core Row: Interactive Tech Stack Matrix with Full-Width Inspector -->
+    <div class="bento-tile flex flex-col p-3 rounded-2xl border border-border/20 bg-muted/10">
+      <!-- Dynamic Tech Inspector Line -->
+      <div class="flex items-center gap-1.5 mb-2 pb-1.5 border-b border-border/15 min-h-6">
+        <span id="bento-inspector-icon" class="text-xs shrink-0">⚡</span>
+        <span id="bento-inspector-text" class="text-[11px] font-medium text-foreground/85 font-firacode leading-tight line-clamp-1">
+          <strong class="text-accent">Tech Stack</strong>: {isEs ? "Pasa el cursor para inspeccionar módulos" : "Hover a module to inspect"}
+        </span>
+      </div>
+
+      <!-- Tech Pills Grid -->
+      <div class="grid grid-cols-3 gap-1.5">
+        {
+          TECH_STACK.map(tech => (
+            <button
+              type="button"
+              class="bento-tech-pill group relative flex items-center justify-center sm:justify-start gap-1.5 px-2 py-1.5 rounded-lg border border-border/20 bg-card/60 text-xs font-medium text-foreground/80 hover:border-accent/60 hover:bg-accent/15 hover:text-accent transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+              data-tech-name={tech.name}
+              data-tech-desc={tech.desc}
+              data-tech-icon={tech.icon}
+              aria-label={`${tech.name}: ${tech.desc}`}
+            >
+              <span class="text-xs transition-transform duration-200 group-hover:scale-125 shrink-0">{tech.icon}</span>
+              <span class="font-firacode text-[11px] truncate font-semibold">{tech.name}</span>
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- Bottom Row: 2-Row GitHub Style Activity Contribution Heatmap -->
+    <div class="bento-tile flex items-center justify-between px-3.5 py-2.5 rounded-2xl border border-border/20 bg-muted/10 gap-3">
+      <div class="flex flex-col min-w-0">
+        <span class="text-[9px] uppercase font-bold tracking-wider opacity-50 truncate">
+          {t("heroWidget.bento.recentActivity")}
+        </span>
+        <span class="text-xs font-semibold text-accent truncate">
+          Consistent Rhythm ⚡
+        </span>
+      </div>
+
+      <!-- 2-Row x 7-Col GitHub Grid (14 days, perfectly compact, zero overflow) -->
+      <div class="grid grid-rows-2 grid-flow-col gap-1 shrink-0" aria-label="Activity heatmap">
+        {
+          [1, 3, 2, 4, 5, 2, 4, 3, 5, 4, 5, 5, 4, 5].map((lvl, i) => (
+            <span
+              class="size-2.5 rounded-xs transition-all duration-200 hover:scale-135 hover:ring-1 hover:ring-accent cursor-pointer"
+              title={`Activity Level ${lvl}/5`}
+              style={`
+                background-color: ${
+                  lvl === 1 ? "color-mix(in srgb, var(--accent) 18%, transparent)" :
+                  lvl === 2 ? "color-mix(in srgb, var(--accent) 38%, transparent)" :
+                  lvl === 3 ? "color-mix(in srgb, var(--accent) 60%, transparent)" :
+                  lvl === 4 ? "color-mix(in srgb, var(--accent) 80%, transparent)" :
+                  "var(--accent)"
+                };
+                animation: bentoPulse 2.2s ease-in-out infinite alternate;
+                animation-delay: ${i * 0.08}s;
+              `}
+            />
+          ))
+        }
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  @keyframes bentoPulse {
+    0% { transform: scale(1); opacity: 0.85; }
+    100% { transform: scale(1.08); opacity: 1; }
+  }
+
+  .hero-bento-aura {
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--accent) 25%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
+  .bento-tile {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bento-tech-pill:active {
+    transform: scale(0.96);
+  }
+</style>
+
+<script>
+  function initHeroBento() {
+    const clockEl = document.getElementById("bento-live-clock");
+    const inspectorIcon = document.getElementById("bento-inspector-icon");
+    const inspectorText = document.getElementById("bento-inspector-text");
+    const techButtons = document.querySelectorAll<HTMLButtonElement>(".bento-tech-pill");
+    const rootEl = document.querySelector(".hero-bento-wrapper");
+
+    if (!rootEl) return;
+
+    const isEs = document.documentElement.lang === "es";
+    const defaultText = `<strong class="text-accent">Tech Stack</strong>: ${isEs ? "Pasa el cursor para inspeccionar módulos" : "Hover a module to inspect"}`;
+
+    let clockInterval: number | null = null;
+    let isInViewport = true;
+
+    function updateClock() {
+      if (!clockEl) return;
+      try {
+        const now = new Date();
+        const formatted = new Intl.DateTimeFormat("en-US", {
+          timeZone: "America/Guatemala",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }).format(now);
+        clockEl.textContent = formatted;
+      } catch {
+        const now = new Date();
+        clockEl.textContent = now.toTimeString().split(" ")[0] || "--:--:--";
+      }
+    }
+
+    function startClock() {
+      if (clockInterval) return;
+      updateClock();
+      clockInterval = window.setInterval(updateClock, 1000);
+    }
+
+    function stopClock() {
+      if (clockInterval) {
+        clearInterval(clockInterval);
+        clockInterval = null;
+      }
+    }
+
+    // Viewport observer to avoid unnecessary updates when scrolled out of view
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          isInViewport = entry.isIntersecting;
+          if (isInViewport && document.visibilityState === "visible") {
+            startClock();
+          } else {
+            stopClock();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(rootEl);
+
+    // Document visibility listener
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible" && isInViewport) {
+        startClock();
+      } else {
+        stopClock();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    // Initial start
+    startClock();
+
+    // Tech Matrix Hover Inspector
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
+    techButtons.forEach(btn => {
+      btn.addEventListener(
+        "mouseenter",
+        () => {
+          const name = btn.dataset.techName || "";
+          const desc = btn.dataset.techDesc || "";
+          const icon = btn.dataset.techIcon || "⚡";
+
+          if (inspectorIcon) inspectorIcon.textContent = icon;
+          if (inspectorText) {
+            inspectorText.innerHTML = `<strong class="text-accent">${name}</strong>: ${desc}`;
+          }
+        },
+        { signal }
+      );
+
+      btn.addEventListener(
+        "mouseleave",
+        () => {
+          if (inspectorIcon) inspectorIcon.textContent = "⚡";
+          if (inspectorText) inspectorText.innerHTML = defaultText;
+        },
+        { signal }
+      );
+    });
+
+    // Cleanup on page transition
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        stopClock();
+        observer.disconnect();
+        document.removeEventListener("visibilitychange", onVisibilityChange);
+        abortController.abort();
+      },
+      { once: true }
+    );
+  }
+
+  initHeroBento();
+  document.addEventListener("astro:page-load", initHeroBento);
+</script>
