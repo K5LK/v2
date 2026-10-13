@@ -2,10 +2,11 @@
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconGallery from "@/assets/icons/IconGallery.svg";
+import IconTools from "@/assets/icons/IconTools.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import { SITE } from "@/config";
-import { useTranslations, getTargetLanguageUrl, isActive as checkRouteActive } from "@/i18n/utils";
+import { useTranslations, isActive as checkRouteActive } from "@/i18n/utils";
 
 interface Props {
   currentPath: string;
@@ -15,15 +16,6 @@ const { currentPath } = Astro.props;
 
 const locale = Astro.currentLocale || "en";
 const t = useTranslations(locale);
-const targetLocale = locale === "es" ? "en" : "es";
-const targetLanguageUrl = getTargetLanguageUrl(
-  Astro.url.pathname,
-  targetLocale
-);
-const langToggleTitle =
-  locale === "es" ? "Switch to English" : "Cambiar a Español";
-const langToggleLabel =
-  locale === "es" ? "Switch to English" : "Cambiar a Español";
 
 const isActive = (path: string) => checkRouteActive(currentPath, path);
 ---
@@ -174,6 +166,21 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
               </a>
             )
           }
+          <a
+            href={locale === "es" ? "/es/tools" : "/tools"}
+            class:list={["mobile-nav-link", { active: isActive("/tools") }]}
+            style="--i:5"
+          >
+            <span class="mobile-nav-icon" aria-hidden="true">
+              <IconTools class="size-4" />
+            </span>
+            <span>{t("nav.tools")}</span>
+            {
+              isActive("/tools") && (
+                <span class="mobile-nav-active-dot" aria-hidden="true" />
+              )
+            }
+          </a>
         </nav>
 
         <!-- Divider -->
@@ -231,35 +238,8 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
           {locale === "es" ? "Preferencias" : "Preferences"}
         </p>
 
-        <!-- Preferences row: Theme + Lang -->
+        <!-- Preferences row -->
         <div class="mobile-prefs-row">
-          <!-- Language toggle -->
-          <a
-            href={targetLanguageUrl}
-            class="mobile-pref-btn flex-1"
-            title={langToggleTitle}
-            aria-label={langToggleLabel}
-            data-lang-toggle={targetLocale}
-          >
-            <svg
-              class="size-4 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.8"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c-.03.077-.07.154-.114.23-.9 1.54-2.11 3.05-3.535 4.5M6.412 9a14.95 14.95 0 003.535 4.5m0 0a14.973 14.973 0 01-3.298 3.19M6.412 9H3.9M15 9h-2.5"
-              ></path>
-            </svg>
-            <span class="font-firacode text-xs font-bold tracking-wider"
-              >{locale === "es" ? "EN" : "ES"}</span
-            >
-          </a>
-
           {
             SITE.lightAndDarkMode && (
               <button
@@ -298,7 +278,10 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
               aria-hidden="true"
             >
               <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-              <path class="sound-wave-icon" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              <path
+                class="sound-wave-icon"
+                d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"
+              ></path>
             </svg>
             <span id="sound-fx-label-mobile">
               {t("nav.soundFx")}

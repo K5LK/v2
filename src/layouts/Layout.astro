@@ -117,16 +117,6 @@ const showGrain = SITE.backdropEffects.grain;
   class={`${scrollSmooth ? "scroll-smooth" : ""}`}
 >
   <head>
-    <script is:inline>
-      try {
-        if (window.location.pathname === "/") {
-          const preferredLang = localStorage.getItem("preferred-lang");
-          if (preferredLang === "es") {
-            window.location.replace("/es");
-          }
-        }
-      } catch {}
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -479,35 +469,3 @@ const showGrain = SITE.backdropEffects.grain;
     </script>
   )
 }
-
-<script>
-  let langCleanup: AbortController | null = null;
-
-  document.addEventListener("astro:page-load", () => {
-    if (langCleanup) langCleanup.abort();
-    langCleanup = new AbortController();
-    const { signal } = langCleanup;
-
-    const pathname = window.location.pathname;
-
-    // 1. Auto-save preference based on path (except root /)
-    if (pathname !== "/") {
-      if (pathname.startsWith("/es/") || pathname === "/es") {
-        localStorage.setItem("preferred-lang", "es");
-      } else {
-        localStorage.setItem("preferred-lang", "en");
-      }
-    }
-
-    // 2. Track language switcher button clicks
-    document.addEventListener("click", (e) => {
-      const toggle = (e.target as HTMLElement).closest("[data-lang-toggle]");
-      if (toggle) {
-        const targetLang = toggle.getAttribute("data-lang-toggle");
-        if (targetLang) {
-          localStorage.setItem("preferred-lang", targetLang);
-        }
-      }
-    }, { signal });
-  });
-</script>

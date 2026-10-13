@@ -1,6 +1,5 @@
 export const languages = {
   en: "English",
-  es: "Español",
 } as const;
 
 export const defaultLang = "en";
@@ -15,6 +14,7 @@ export const ui = {
     "nav.search": "Search",
     "nav.archives": "Archives",
     "nav.galleries": "Galleries",
+    "nav.tools": "Developer tools",
     "nav.shortcuts": "Shortcuts",
     "nav.changeAccent": "Change accent color",
     "nav.accentColor": "Accent Color",
@@ -54,7 +54,8 @@ export const ui = {
     "terminal.badgeHint": "Click to open interactive console",
     "terminal.badgeKeyHint": "Press 'C' or click to open interactive console",
     "terminal.title": "guest@devosfera: ~",
-    "terminal.welcome": "Welcome to Devosfera Shell v1.0. Type 'help' to see available commands.",
+    "terminal.welcome":
+      "Welcome to Devosfera Shell v1.0. Type 'help' to see available commands.",
     "terminal.promptPlaceholder": "Type a command...",
     "terminal.helpHeader": "Available commands:",
     "terminal.helpRandom": "Pick and open a random article roulette",
@@ -65,7 +66,8 @@ export const ui = {
     "terminal.helpWhoami": "Show author bio & system info",
     "terminal.helpClear": "Clear terminal output screen",
     "terminal.helpExit": "Close terminal console",
-    "terminal.cmdNotFound": "Command not found. Type 'help' for available commands.",
+    "terminal.cmdNotFound":
+      "Command not found. Type 'help' for available commands.",
     "terminal.themeChanged": "Accent theme changed to",
     "terminal.matrixRunning": "Initiating Matrix digital rain stream... 🕶️",
     "terminal.randomTriggered": "Spinning the Post Roulette... 🎲",
@@ -94,6 +96,12 @@ export const ui = {
     "galleries.photos": "photos",
     "galleries.collection": "Collection",
     "galleries.noImages": "This gallery has no images yet.",
+    "tools.desc": "A collection of tools I use in my development workflow.",
+    "tools.count": "tool",
+    "tools.counts": "tools",
+    "tools.empty": "No tools added yet.",
+    "tools.categories": "Categories",
+    "tools.visitWebsite": "Visit website",
     "archives.title": "Archive",
     "archives.desc":
       "A journey through everything I've published, organized over time.",
@@ -132,7 +140,6 @@ export const ui = {
     "shortcuts.action.close": "Close Current Modal",
     "shortcuts.action.terminal": "Open Shell Terminal (Home)",
     "shortcuts.action.reading": "Toggle Reading Mode (Articles)",
-    "shortcuts.action.lang": "Switch Language",
     "shortcuts.action.next": "Select Next Post Card",
     "shortcuts.action.prev": "Select Prev Post Card",
     "shortcuts.action.open": "Open Selected Post Card",
@@ -148,16 +155,17 @@ export const ui = {
     "shortcuts.toast.gotoTags": "Navigating to Tags...",
     "shortcuts.toast.gotoGalleries": "Navigating to Galleries...",
     "shortcuts.toast.themeChanged": "Theme changed to",
-    "shortcuts.toast.lang": "Switching language...",
     // ── Sound FX & Sensory Preferences ──
     "shortcuts.action.soundFx": "Toggle Sound Effects",
     "shortcuts.toast.soundFxEnabled": "Sound effects enabled 🔊",
     "shortcuts.toast.soundFxMuted": "Sound effects muted 🔇",
 
     // ── Easter Eggs & Konami Code ──
-    "shortcuts.toast.konami": "🎮 30 LIVES UNLOCKED! Konami Code Activated! Secret 'Arcade 80s' theme enabled ✨",
+    "shortcuts.toast.konami":
+      "🎮 30 LIVES UNLOCKED! Konami Code Activated! Secret 'Arcade 80s' theme enabled ✨",
     "shortcuts.hint.konami": "🕹️ Secret Code: ↑ ↑ ↓ ↓ ← → ← → B A",
-    "easteregg.konamiHint": "Psst... 30 lives await with the classic Contra code (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
+    "easteregg.konamiHint":
+      "Psst... 30 lives await with the classic Contra code (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
   },
   es: {
     "nav.posts": "Publicaciones",
@@ -166,6 +174,7 @@ export const ui = {
     "nav.search": "Buscar",
     "nav.archives": "Archivo",
     "nav.galleries": "Galerías",
+    "nav.tools": "Herramientas de desarrollo",
     "nav.shortcuts": "Atajos",
     "nav.changeAccent": "Cambiar color de acento",
     "nav.accentColor": "Color de Acento",
@@ -206,7 +215,8 @@ export const ui = {
     "terminal.badgeHint": "Haz clic para abrir la consola interactiva",
     "terminal.badgeKeyHint": "Presiona 'C' o haz clic para abrir la terminal",
     "terminal.title": "guest@devosfera: ~",
-    "terminal.welcome": "Bienvenido a la consola interactiva de Devosfera v1.0. Escribe 'help' para ver los comandos.",
+    "terminal.welcome":
+      "Bienvenido a la consola interactiva de Devosfera v1.0. Escribe 'help' para ver los comandos.",
     "terminal.promptPlaceholder": "Escribe un comando...",
     "terminal.helpHeader": "Comandos disponibles:",
     "terminal.helpRandom": "Lanza la ruleta de artículos aleatorios",
@@ -217,7 +227,8 @@ export const ui = {
     "terminal.helpWhoami": "Muestra información del autor y el blog",
     "terminal.helpClear": "Limpia la pantalla de la terminal",
     "terminal.helpExit": "Cierra la consola interactiva",
-    "terminal.cmdNotFound": "Comando no reconocido. Escribe 'help' para ver la lista.",
+    "terminal.cmdNotFound":
+      "Comando no reconocido. Escribe 'help' para ver la lista.",
     "terminal.themeChanged": "Tema de acento cambiado a",
     "terminal.matrixRunning": "Iniciando lluvia de código Matrix... 🕶️",
     "terminal.randomTriggered": "Girando la ruleta de artículos... 🎲",
@@ -249,6 +260,13 @@ export const ui = {
     "galleries.photos": "fotos",
     "galleries.collection": "Colección",
     "galleries.noImages": "Esta galería aún no tiene imágenes.",
+    "tools.desc":
+      "Una colección de herramientas que uso en mi flujo de desarrollo.",
+    "tools.count": "herramienta",
+    "tools.counts": "herramientas",
+    "tools.empty": "Aún no se han añadido herramientas.",
+    "tools.categories": "Categorías",
+    "tools.visitWebsite": "Visitar sitio web",
     "archives.title": "Archivo",
     "archives.desc":
       "Un viaje por todo lo que he publicado, organizado a lo largo del tiempo.",
@@ -287,7 +305,6 @@ export const ui = {
     "shortcuts.action.close": "Cerrar ventana modal actual",
     "shortcuts.action.terminal": "Abrir Terminal Shell (Inicio)",
     "shortcuts.action.reading": "Alternar modo lectura (Artículos)",
-    "shortcuts.action.lang": "Cambiar idioma",
     "shortcuts.action.next": "Seleccionar siguiente tarjeta",
     "shortcuts.action.prev": "Seleccionar tarjeta anterior",
     "shortcuts.action.open": "Abrir tarjeta seleccionada",
@@ -303,15 +320,16 @@ export const ui = {
     "shortcuts.toast.gotoTags": "Navegando a Etiquetas...",
     "shortcuts.toast.gotoGalleries": "Navegando a Galerías...",
     "shortcuts.toast.themeChanged": "Tema cambiado a",
-    "shortcuts.toast.lang": "Cambiando de idioma...",
     // ── Efectos de Sonido y Preferencias Sensoriales ──
     "shortcuts.action.soundFx": "Alternar Efectos de Sonido",
     "shortcuts.toast.soundFxEnabled": "Efectos de sonido activados 🔊",
     "shortcuts.toast.soundFxMuted": "Efectos de sonido silenciados 🔇",
 
     // ── Easter Eggs y Código Konami ──
-    "shortcuts.toast.konami": "🎮 ¡30 VIDAS DESBLOQUEADAS! ¡Código Konami activado! Tema secreto 'Arcade 80s' activado ✨",
+    "shortcuts.toast.konami":
+      "🎮 ¡30 VIDAS DESBLOQUEADAS! ¡Código Konami activado! Tema secreto 'Arcade 80s' activado ✨",
     "shortcuts.hint.konami": "🕹️ Código Secreto: ↑ ↑ ↓ ↓ ← → ← → B A",
-    "easteregg.konamiHint": "Psst... 30 vidas te esperan con el código clásico de Contra (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
+    "easteregg.konamiHint":
+      "Psst... 30 vidas te esperan con el código clásico de Contra (↑ ↑ ↓ ↓ ← → ← → B A) 🕹️",
   },
 } as const;

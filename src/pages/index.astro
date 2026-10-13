@@ -97,7 +97,7 @@ const randomPostsPool: RandomPostItem[] = sortedPosts.map(entry => ({
         </p>
 
         <!-- 4. Interactive Action Deck: Lo-Fi Audio Player & Random Article Roulette -->
-        <div class="mt-6 sm:mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div class="mt-6 sm:mt-8 flex w-full flex-wrap items-center justify-center gap-3">
           {
             SITE.introAudio.enabled && (
               <IntroAudio
@@ -105,6 +105,8 @@ const randomPostsPool: RandomPostItem[] = sortedPosts.map(entry => ({
                 label={SITE.introAudio.label}
                 duration={SITE.introAudio.duration}
                 isStream={SITE.introAudio.isStream}
+                mode={SITE.introAudio.mode}
+                meting={SITE.introAudio.meting}
               />
             )
           }

@@ -1,4 +1,6 @@
 ---
+import type { MetingConfig } from "@/utils/introAudioStore";
+
 /**
  * IntroAudioCompact — A minimized version of the intro/brand audio player.
  * It is meant to be displayed in the header or persistent navigation areas
@@ -9,6 +11,8 @@ interface Props {
   label?: string;
   duration?: number;
   isStream?: boolean;
+  mode?: "meting";
+  meting?: MetingConfig;
   class?: string;
 }
 
@@ -17,19 +21,25 @@ const {
   label = "INTRO",
   duration = 30,
   isStream: streamOverride,
+  mode = "meting",
+  meting,
   class: className = "",
 } = Astro.props;
 
-const isStream = streamOverride ?? /^https?:\/\//i.test(src);
+const initialSrc = src;
+const initialLabel = label;
+const isStream = streamOverride ?? false;
 ---
 
 <div
   id="intro-audio-compact"
   class:list={["intro-audio-compact", className]}
-  data-src={src}
-  data-label={label}
+  data-src={initialSrc}
+  data-label={initialLabel}
   data-duration={String(duration)}
   data-stream={isStream ? "true" : "false"}
+  data-mode={mode}
+  data-meting={JSON.stringify(meting ?? null)}
   role="region"
   aria-label="Compact audio player"
 >
@@ -63,21 +73,19 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
     </svg>
   </button>
 
-  <span class="intro-audio-compact-label">{label}</span>
-  <span id="intro-audio-compact-meta" class="intro-audio-compact-meta"
-    >{isStream ? "LIVE" : "0:00"}</span
-  >
 </div>
 
 <style>
   .intro-audio-compact {
     display: none;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
     border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
     background: color-mix(in srgb, var(--background) 88%, transparent);
-    padding: 0.26rem 0.55rem 0.26rem 0.35rem;
     font-family: var(--font-firacode, monospace);
     font-size: 0.65rem;
     color: var(--foreground);
@@ -100,78 +108,56 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
 
   .intro-audio-compact.is-playing {
     border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 0.8rem color-mix(in srgb, var(--accent) 18%, transparent);
   }
 
   .intro-audio-compact-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 100%;
+    height: 100%;
     border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
-    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 0;
+    background: transparent;
     color: var(--accent);
     cursor: pointer;
     transition:
       transform 0.15s ease,
-      background-color 0.2s ease;
+      color 0.2s ease;
   }
 
   .intro-audio-compact-btn:hover {
-    transform: scale(1.05);
-    background: color-mix(in srgb, var(--accent) 20%, transparent);
+    transform: scale(1.08);
+    color: var(--foreground);
   }
 
   .intro-audio-compact-btn:focus-visible {
-    outline: 2px dashed var(--accent);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
   .intro-audio-compact-icon {
-    width: 0.58rem;
-    height: 0.58rem;
-  }
-
-  .intro-audio-compact-label {
-    opacity: 0.75;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-
-  .intro-audio-compact-meta {
-    color: var(--accent);
-    font-size: 0.62rem;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    opacity: 0.85;
+    width: 0.75rem;
+    height: 0.75rem;
   }
 
   .hidden {
     display: none !important;
   }
 
-  @media (max-width: 460px) {
-    .intro-audio-compact-label {
-      display: none;
-    }
-  }
 </style>
 
 <script>
   import {
     getIntroAudioStore,
     emitIntroAudioState,
+    loadMetingPlaylist,
     INTRO_AUDIO_STATE_EVENT,
     type IntroAudioState,
+    type MetingConfig,
   } from "@/utils/introAudioStore";
   import { soundFx } from "@/utils/soundFx";
-
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const fmt = (secs: number) => {
-    const s = Math.max(0, Math.floor(secs));
-    return `${Math.floor(s / 60)}:${pad(s % 60)}`;
-  };
 
   function initIntroAudioCompact() {
     const wrap = document.getElementById(
@@ -186,11 +172,7 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
     const iconPause = document.getElementById(
       "intro-audio-compact-pause"
     ) as SVGElement | null;
-    const meta = document.getElementById(
-      "intro-audio-compact-meta"
-    ) as HTMLElement | null;
-
-    if (!wrap || !btn || !meta) return;
+    if (!wrap || !btn) return;
     if (wrap.dataset.introAudioCompactInitialized === "true") return;
     wrap.dataset.introAudioCompactInitialized = "true";
 
@@ -198,17 +180,37 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
     const label = wrap.dataset.label ?? "INTRO";
     const durationHint = Number(wrap.dataset.duration ?? "0");
     const isStream = wrap.dataset.stream === "true";
+    const mode = wrap.dataset.mode === "meting" ? "meting" : undefined;
+    const meting = JSON.parse(
+      wrap.dataset.meting ?? "null"
+    ) as MetingConfig | null;
 
-    const store = getIntroAudioStore({ src, label, isStream, durationHint });
+    const store = getIntroAudioStore({
+      src,
+      label,
+      isStream,
+      durationHint,
+      mode,
+      meting: meting ?? undefined,
+    });
+    if (mode === "meting" && meting) {
+      void loadMetingPlaylist(store, meting);
+    }
 
-    const playLabel = isStream ? "Play radio" : "Play audio";
-    const pauseLabel = isStream ? "Pause radio" : "Pause audio";
-
-    const setPlaying = (playing: boolean) => {
+    const setPlaying = (playing: boolean, stream: boolean) => {
       wrap.classList.toggle("is-playing", playing);
       iconPlay?.classList.toggle("hidden", playing);
       iconPause?.classList.toggle("hidden", !playing);
-      btn.setAttribute("aria-label", playing ? pauseLabel : playLabel);
+      btn.setAttribute(
+        "aria-label",
+        playing
+          ? stream
+            ? "Pause live audio"
+            : "Pause audio"
+          : stream
+            ? "Resume live audio"
+            : "Resume audio"
+      );
     };
 
     const updateVisibility = (state: IntroAudioState) => {
@@ -222,25 +224,22 @@ const isStream = streamOverride ?? /^https?:\/\//i.test(src);
     };
 
     const render = (state: IntroAudioState) => {
-      if (state.src !== src) return;
-
-      setPlaying(state.playing);
+      setPlaying(state.playing, state.isStream);
       updateVisibility(state);
-      meta.textContent = state.isStream ? "LIVE" : fmt(state.currentTime);
     };
 
     btn.addEventListener("click", () => {
       // Trigger tactile audio feedback on compact player toggle
       soundFx.playTap();
       if (store.audio.paused) {
-        void store.audio.play().catch(() => {
-          /* playback blocked by browser */
+        void store.audio.play().catch((error: unknown) => {
+          // eslint-disable-next-line no-console
+          console.error("Audio playback failed for the selected track.", error);
         });
       } else {
         store.audio.pause();
       }
     });
-
     const controller = new AbortController();
 
     window.addEventListener(

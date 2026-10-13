@@ -1,0 +1,60 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import AuroraHero from "@/components/AuroraHero.astro";
+import ToolCard from "@/components/ToolCard.astro";
+import { SITE } from "@/config";
+import { useTranslations } from "@/i18n/utils";
+import { isToolEntryForLocale } from "@/utils/tools";
+
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+const tools = (
+  await getCollection(
+    "tools",
+    ({ id, data }) => !data.draft && isToolEntryForLocale(id, locale)
+  )
+).sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<Layout title={`${t("nav.tools")} | ${SITE.title}`}>
+  <Header />
+  <Breadcrumb />
+  <main id="main-content" class="app-layout pb-12">
+    <AuroraHero
+      title={t("nav.tools")}
+      description={t("tools.desc")}
+      class="mb-10"
+    >
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <span class="hero-badge">
+          {tools.length}
+          {tools.length === 1 ? t("tools.count") : t("tools.counts")}
+        </span>
+      </div>
+    </AuroraHero>
+
+    {
+      tools.length === 0 ? (
+        <p class="mt-12 text-center text-foreground/50 italic">
+          {t("tools.empty")}
+        </p>
+      ) : (
+        <ul
+          class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          role="list"
+        >
+          {tools.map((tool, index) => (
+            <li>
+              <ToolCard tool={tool} loading={index < 3 ? "eager" : "lazy"} />
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </main>
+  <Footer />
+</Layout>

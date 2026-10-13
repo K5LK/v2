@@ -12,6 +12,7 @@ import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconGallery from "@/assets/icons/IconGallery.svg";
+import IconTools from "@/assets/icons/IconTools.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import Logo from "@/assets/logo/devosfera.svg";
 import MobileMenu from "./MobileMenu.astro";
@@ -19,19 +20,13 @@ import IntroAudioCompact from "./IntroAudioCompact.astro";
 import HeaderAccentPicker from "./HeaderAccentPicker.astro";
 import HeaderSoundToggle from "./HeaderSoundToggle.astro";
 import { SITE } from "@/config";
-import { useTranslations, getTargetLanguageUrl, isActive as checkRouteActive } from "@/i18n/utils";
+import { useTranslations, isActive as checkRouteActive } from "@/i18n/utils";
 import "@/styles/header.css";
 
 const { pathname } = Astro.url;
 
 const locale = Astro.currentLocale || "en";
 const t = useTranslations(locale);
-const targetLocale = locale === "es" ? "en" : "es";
-const targetLanguageUrl = getTargetLanguageUrl(pathname, targetLocale);
-const langToggleTitle =
-  locale === "es" ? "Switch to English" : "Cambiar a Español";
-const langToggleLabel =
-  locale === "es" ? "Switch to English" : "Cambiar a Español";
 
 // Remove trailing slash from current pathname if exists
 const currentPath =
@@ -63,58 +58,33 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
           "transition-all duration-300",
         ]}
       >
-        <!-- Logo -->
-        <a
-          href={locale === "es" ? "/es" : "/"}
-          aria-label={locale === "es" ? "Devosfera Inicio" : "Devosfera Home"}
-          class="group relative z-20 flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl"
-        >
-          <Logo class="w-37.5 dark:invert" />
-        </a>
+        <div class="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
+          <!-- Logo -->
+          <a
+            href={locale === "es" ? "/es" : "/"}
+            aria-label={locale === "es" ? "Devosfera Inicio" : "Devosfera Home"}
+            class="group relative z-20 flex shrink-0 items-center gap-2 text-xl font-bold tracking-tight sm:text-2xl"
+          >
+            <Logo class="w-37.5 dark:invert" />
+          </a>
 
-        <!-- Center Audio Player -->
-        {
-          SITE.introAudio.enabled && (
-            <div class="flex min-w-0 flex-1 justify-center">
+          <!-- Compact playback toggle appears after playback has started. -->
+          {
+            SITE.introAudio.enabled && (
               <IntroAudioCompact
                 src={SITE.introAudio.src}
                 label={SITE.introAudio.label}
                 duration={SITE.introAudio.duration}
                 isStream={SITE.introAudio.isStream}
-                class="nav-intro-audio-compact"
+                mode={SITE.introAudio.mode}
+                meting={SITE.introAudio.meting}
               />
-            </div>
-          )
-        }
+            )
+          }
+        </div>
 
         <!-- Nav area -->
         <nav id="nav-menu" class="flex shrink-0 items-center gap-1.5 lg:gap-1">
-          <!-- Mobile language switcher chip (visible only on screens < 1024px) -->
-          <a
-            href={targetLanguageUrl}
-            class="nav-lang-chip lg:hidden!"
-            title={langToggleTitle}
-            aria-label={langToggleLabel}
-            data-lang-toggle={targetLocale}
-          >
-            <svg
-              class="nav-lang-chip-icon size-3.5 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="1.8"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c-.03.077-.07.154-.114.23-.9 1.54-2.11 3.05-3.535 4.5M6.412 9a14.95 14.95 0 003.535 4.5m0 0a14.973 14.973 0 01-3.298 3.19M6.412 9H3.9M15 9h-2.5"
-              ></path>
-            </svg>
-            <span class="nav-lang-chip-label">{targetLocale.toUpperCase()}</span
-            >
-          </a>
-
           <!-- Mobile search button (visible only on screens < 1024px) -->
           <button
             data-search-trigger
@@ -182,35 +152,6 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
             <!-- Separator -->
             <li class="flex items-center px-1" aria-hidden="true">
               <div class="h-4 w-px bg-border/30"></div>
-            </li>
-
-            <!-- Language switcher chip -->
-            <li class="flex items-center">
-              <a
-                href={targetLanguageUrl}
-                class="nav-lang-chip"
-                title={langToggleTitle}
-                aria-label={langToggleLabel}
-                data-lang-toggle={targetLocale}
-              >
-                <svg
-                  class="nav-lang-chip-icon size-3.5 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  aria-hidden="true"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5c-.03.077-.07.154-.114.23-.9 1.54-2.11 3.05-3.535 4.5M6.412 9a14.95 14.95 0 003.535 4.5m0 0a14.973 14.973 0 01-3.298 3.19M6.412 9H3.9M15 9h-2.5"
-                  ></path>
-                </svg>
-                <span class="nav-lang-chip-label"
-                  >{targetLocale.toUpperCase()}</span
-                >
-              </a>
             </li>
 
             <!-- Separator -->
@@ -307,6 +248,16 @@ const isActive = (path: string) => checkRouteActive(currentPath, path);
                         </a>
                       )
                     }
+                    <a
+                      href={locale === "es" ? "/es/tools" : "/tools"}
+                      class:list={[
+                        "popover-link",
+                        { "popover-link-active": isActive("/tools") },
+                      ]}
+                    >
+                      <IconTools class="size-3.5 shrink-0" />
+                      {t("nav.tools")}
+                    </a>
                   </div>
                 </div>
 

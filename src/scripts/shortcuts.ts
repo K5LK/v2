@@ -4,7 +4,7 @@
  * Client-side keyboard shortcuts controller:
  * - Modal open/close with ESC, '?' or button triggers
  * - Go-To sequence ('g' + 'h', 'p', 't', 'g')
- * - Theme toggle ('t'), language switch ('l'), sound FX toggle ('x')
+ * - Theme toggle ('t'), sound FX toggle ('x')
  * - Vim navigation ('j', 'k')
  * - Konami code detection ('↑↑↓↓←→←→BA') with retro 80s arcade celebration & canvas confetti
  * - Dynamic interactive toast notifications
@@ -31,8 +31,7 @@ export function initShortcutsModal(): void {
   const toastGotoHome =
     modal.getAttribute("data-toast-goto-home") || "Navigating to Home...";
   const toastGotoPosts =
-    modal.getAttribute("data-toast-goto-posts") ||
-    "Navigating to Articles...";
+    modal.getAttribute("data-toast-goto-posts") || "Navigating to Articles...";
   const toastGotoTags =
     modal.getAttribute("data-toast-goto-tags") || "Navigating to Tags...";
   const toastGotoGalleries =
@@ -40,10 +39,9 @@ export function initShortcutsModal(): void {
     "Navigating to Galleries...";
   const toastTheme =
     modal.getAttribute("data-toast-theme") || "Theme changed to";
-  const toastLang =
-    modal.getAttribute("data-toast-lang") || "Switching language...";
   const toastSoundEnabled =
-    modal.getAttribute("data-toast-sound-enabled") || "Sound effects enabled 🔊";
+    modal.getAttribute("data-toast-sound-enabled") ||
+    "Sound effects enabled 🔊";
   const toastSoundMuted =
     modal.getAttribute("data-toast-sound-muted") || "Sound effects muted 🔇";
 
@@ -167,228 +165,215 @@ export function initShortcutsModal(): void {
     "a",
   ];
 
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
-    // Discard auto-repeat events
-    if (e.repeat) return;
+  document.addEventListener(
+    "keydown",
+    (e: KeyboardEvent) => {
+      // Discard auto-repeat events
+      if (e.repeat) return;
 
-    // Ignore in form fields/editable elements
-    const activeTag = document.activeElement?.tagName;
-    const isEditable =
-      document.activeElement?.hasAttribute("contenteditable") ||
-      activeTag === "INPUT" ||
-      activeTag === "TEXTAREA" ||
-      activeTag === "SELECT";
+      // Ignore in form fields/editable elements
+      const activeTag = document.activeElement?.tagName;
+      const isEditable =
+        document.activeElement?.hasAttribute("contenteditable") ||
+        activeTag === "INPUT" ||
+        activeTag === "TEXTAREA" ||
+        activeTag === "SELECT";
 
-    if (isEditable) return;
+      if (isEditable) return;
 
-    // Ignore if modifier keys are pressed to avoid interfering with browser shortcuts
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // Ignore if modifier keys are pressed to avoid interfering with browser shortcuts
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
 
-    const key = e.key;
+      const key = e.key;
 
-    // 0. Check Konami Code sequence
-    const normalizedKey = key.length === 1 ? key.toLowerCase() : key;
-    const targetKonamiKey = KONAMI_SEQUENCE[konamiIndex];
-    const normalizedTarget =
-      targetKonamiKey.length === 1 ? targetKonamiKey.toLowerCase() : targetKonamiKey;
+      // 0. Check Konami Code sequence
+      const normalizedKey = key.length === 1 ? key.toLowerCase() : key;
+      const targetKonamiKey = KONAMI_SEQUENCE[konamiIndex];
+      const normalizedTarget =
+        targetKonamiKey.length === 1
+          ? targetKonamiKey.toLowerCase()
+          : targetKonamiKey;
 
-    if (normalizedKey === normalizedTarget) {
-      konamiIndex++;
-      if (konamiTimeout) clearTimeout(konamiTimeout);
-      konamiTimeout = window.setTimeout(() => {
-        konamiIndex = 0;
-      }, 2500);
-
-      if (konamiIndex === KONAMI_SEQUENCE.length) {
-        konamiIndex = 0;
+      if (normalizedKey === normalizedTarget) {
+        konamiIndex++;
         if (konamiTimeout) clearTimeout(konamiTimeout);
+        konamiTimeout = window.setTimeout(() => {
+          konamiIndex = 0;
+        }, 2500);
 
-        e.preventDefault();
-        soundFx.play8BitFanfare();
+        if (konamiIndex === KONAMI_SEQUENCE.length) {
+          konamiIndex = 0;
+          if (konamiTimeout) clearTimeout(konamiTimeout);
 
-        // Unlock arcade 80s accent theme and save 24h expiration timestamp
-        document.documentElement.setAttribute("data-accent", "arcade");
-        localStorage.setItem("theme-accent", "arcade");
-        localStorage.setItem("konami-unlocked-at", String(Date.now()));
+          e.preventDefault();
+          soundFx.play8BitFanfare();
 
-        showKonamiCelebration();
-        return;
-      }
-    } else {
-      konamiIndex = 0;
-    }
+          // Unlock arcade 80s accent theme and save 24h expiration timestamp
+          document.documentElement.setAttribute("data-accent", "arcade");
+          localStorage.setItem("theme-accent", "arcade");
+          localStorage.setItem("konami-unlocked-at", String(Date.now()));
 
-    // Close Konami modal on ESC
-    if (key === "Escape") {
-      const konamiModal = document.getElementById("konami-celebration-modal");
-      if (konamiModal && !konamiModal.classList.contains("hidden")) {
-        closeKonamiCelebration();
-        return;
-      }
-    }
-
-    // 1. ESC key -> Close search or shortcuts modals
-    if (key === "Escape") {
-      const searchModal = document.getElementById("search-modal");
-      const searchActive = searchModal?.classList.contains("active");
-      const shortcutsActive = modal?.classList.contains("active");
-
-      if (searchActive || shortcutsActive) {
-        e.preventDefault();
-        if (searchActive) {
-          searchModal?.classList.remove("active");
-          document.body.style.overflow = "";
-          showToast(["esc"], toastSearchClosed);
+          showKonamiCelebration();
+          return;
         }
-        if (shortcutsActive) {
-          closeModal();
-        }
-      }
-      return;
-    }
-
-    // If any modal is active, restrict general navigation shortcuts (j, k, g, t)
-    const isSearchModalActive = document
-      .getElementById("search-modal")
-      ?.classList.contains("active");
-    const isShortcutsModalActive = modal?.classList.contains("active");
-
-    // Toggle shortcuts panel
-    if (key === "?" && !isSearchModalActive) {
-      e.preventDefault();
-      if (isShortcutsModalActive) {
-        closeModal();
       } else {
-        openModal();
+        konamiIndex = 0;
       }
-      return;
-    }
 
-    if (isSearchModalActive || isShortcutsModalActive) {
-      return;
-    }
+      // Close Konami modal on ESC
+      if (key === "Escape") {
+        const konamiModal = document.getElementById("konami-celebration-modal");
+        if (konamiModal && !konamiModal.classList.contains("hidden")) {
+          closeKonamiCelebration();
+          return;
+        }
+      }
 
-    // 2. Go-to sequence [g] + [key]
-    if (gPressed) {
-      gPressed = false;
-      if (gTimeout) clearTimeout(gTimeout);
+      // 1. ESC key -> Close search or shortcuts modals
+      if (key === "Escape") {
+        const searchModal = document.getElementById("search-modal");
+        const searchActive = searchModal?.classList.contains("active");
+        const shortcutsActive = modal?.classList.contains("active");
 
-      if (key === "h" || key === "H") {
-        e.preventDefault();
-        showToast(["g", "h"], toastGotoHome);
-        setTimeout(() => {
-          navigate("/");
-        }, 150);
+        if (searchActive || shortcutsActive) {
+          e.preventDefault();
+          if (searchActive) {
+            searchModal?.classList.remove("active");
+            document.body.style.overflow = "";
+            showToast(["esc"], toastSearchClosed);
+          }
+          if (shortcutsActive) {
+            closeModal();
+          }
+        }
         return;
       }
-      if (key === "p" || key === "P") {
+
+      // If any modal is active, restrict general navigation shortcuts (j, k, g, t)
+      const isSearchModalActive = document
+        .getElementById("search-modal")
+        ?.classList.contains("active");
+      const isShortcutsModalActive = modal?.classList.contains("active");
+
+      // Toggle shortcuts panel
+      if (key === "?" && !isSearchModalActive) {
         e.preventDefault();
-        showToast(["g", "p"], toastGotoPosts);
-        setTimeout(() => {
-          navigate("/posts");
-        }, 150);
+        if (isShortcutsModalActive) {
+          closeModal();
+        } else {
+          openModal();
+        }
         return;
       }
+
+      if (isSearchModalActive || isShortcutsModalActive) {
+        return;
+      }
+
+      // 2. Go-to sequence [g] + [key]
+      if (gPressed) {
+        gPressed = false;
+        if (gTimeout) clearTimeout(gTimeout);
+
+        if (key === "h" || key === "H") {
+          e.preventDefault();
+          showToast(["g", "h"], toastGotoHome);
+          setTimeout(() => {
+            navigate("/");
+          }, 150);
+          return;
+        }
+        if (key === "p" || key === "P") {
+          e.preventDefault();
+          showToast(["g", "p"], toastGotoPosts);
+          setTimeout(() => {
+            navigate("/posts");
+          }, 150);
+          return;
+        }
+        if (key === "t" || key === "T") {
+          e.preventDefault();
+          showToast(["g", "t"], toastGotoTags);
+          setTimeout(() => {
+            navigate("/tags");
+          }, 150);
+          return;
+        }
+        if (key === "g" || key === "G") {
+          e.preventDefault();
+          showToast(["g", "g"], toastGotoGalleries);
+          setTimeout(() => {
+            navigate("/galleries");
+          }, 150);
+          return;
+        }
+        return;
+      }
+
+      // 3. Single key actions
+      if (key === "g" || key === "G") {
+        gPressed = true;
+        gTimeout = window.setTimeout(() => {
+          gPressed = false;
+        }, 1200);
+        return;
+      }
+
+      // [t] Key -> Toggle Theme
       if (key === "t" || key === "T") {
         e.preventDefault();
-        showToast(["g", "t"], toastGotoTags);
+        const themeBtn = document.getElementById(
+          "theme-btn"
+        ) as HTMLElement | null;
+        const themeBtnMobile = document.getElementById(
+          "theme-btn-mobile"
+        ) as HTMLElement | null;
+
+        if (themeBtn && window.getComputedStyle(themeBtn).display !== "none") {
+          themeBtn.click();
+        } else if (themeBtnMobile) {
+          themeBtnMobile.click();
+        }
+
         setTimeout(() => {
-          navigate("/tags");
-        }, 150);
+          const currentTheme = localStorage.getItem("theme") || "dark";
+          showToast(["t"], `${toastTheme} ${currentTheme}`);
+        }, 50);
         return;
       }
-      if (key === "g" || key === "G") {
+
+      // [x] Key -> Toggle Sound Effects
+      if (key === "x" || key === "X") {
         e.preventDefault();
-        showToast(["g", "g"], toastGotoGalleries);
-        setTimeout(() => {
-          navigate("/galleries");
-        }, 150);
+        const newState = soundFx.toggle();
+        showToast(["x"], newState ? toastSoundEnabled : toastSoundMuted);
         return;
       }
-      return;
-    }
 
-    // 3. Single key actions
-    if (key === "g" || key === "G") {
-      gPressed = true;
-      gTimeout = window.setTimeout(() => {
-        gPressed = false;
-      }, 1200);
-      return;
-    }
-
-    // [t] Key -> Toggle Theme
-    if (key === "t" || key === "T") {
-      e.preventDefault();
-      const themeBtn = document.getElementById(
-        "theme-btn"
-      ) as HTMLElement | null;
-      const themeBtnMobile = document.getElementById(
-        "theme-btn-mobile"
-      ) as HTMLElement | null;
-
-      if (
-        themeBtn &&
-        window.getComputedStyle(themeBtn).display !== "none"
-      ) {
-        themeBtn.click();
-      } else if (themeBtnMobile) {
-        themeBtnMobile.click();
+      // Vim navigation [j] / [k]
+      if (key === "j" || key === "J") {
+        e.preventDefault();
+        navigateCards(1);
+        soundFx.playTap(1400);
+        return;
       }
-
-      setTimeout(() => {
-        const currentTheme = localStorage.getItem("theme") || "dark";
-        showToast(["t"], `${toastTheme} ${currentTheme}`);
-      }, 50);
-      return;
-    }
-
-    // [l] Key -> Toggle Language
-    if (key === "l" || key === "L") {
-      e.preventDefault();
-      const langToggle = document.querySelector(
-        "[data-lang-toggle]"
-      ) as HTMLElement | null;
-      if (langToggle) {
-        soundFx.playSwitch();
-        showToast(["l"], toastLang);
-        setTimeout(() => {
-          langToggle.click();
-        }, 150);
+      if (key === "k" || key === "K") {
+        e.preventDefault();
+        navigateCards(-1);
+        soundFx.playTap(1400);
+        return;
       }
-      return;
-    }
-
-    // [x] Key -> Toggle Sound Effects
-    if (key === "x" || key === "X") {
-      e.preventDefault();
-      const newState = soundFx.toggle();
-      showToast(["x"], newState ? toastSoundEnabled : toastSoundMuted);
-      return;
-    }
-
-    // Vim navigation [j] / [k]
-    if (key === "j" || key === "J") {
-      e.preventDefault();
-      navigateCards(1);
-      soundFx.playTap(1400);
-      return;
-    }
-    if (key === "k" || key === "K") {
-      e.preventDefault();
-      navigateCards(-1);
-      soundFx.playTap(1400);
-      return;
-    }
-  },
-  { signal }
+    },
+    { signal }
   );
 
   // ===== Konami Celebration Modal & Confetti =====
   const konamiModal = document.getElementById("konami-celebration-modal");
   const konamiCloseBtn = document.getElementById("konami-close-btn");
   const konamiBackdrop = document.getElementById("konami-celebration-backdrop");
-  const konamiCanvas = document.getElementById("konami-confetti-canvas") as HTMLCanvasElement | null;
+  const konamiCanvas = document.getElementById(
+    "konami-confetti-canvas"
+  ) as HTMLCanvasElement | null;
   let konamiAnimFrame: number | null = null;
 
   function launchKonamiConfetti() {

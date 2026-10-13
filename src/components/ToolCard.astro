@@ -1,0 +1,111 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import { getToolCoverImage, getToolSlug } from "@/utils/tools";
+import { useTranslations } from "@/i18n/utils";
+
+type Props = {
+  tool: CollectionEntry<"tools">;
+  slug?: string;
+  loading?: "lazy" | "eager";
+};
+
+const { tool, slug = getToolSlug(tool.id), loading = "lazy" } = Astro.props;
+const { title, description, tags } = tool.data;
+const coverImage = getToolCoverImage(tool.id, tool.data.coverImage);
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+const prefix = locale === "es" ? "/es" : "";
+---
+
+<a
+  href={`${prefix}/tools/${slug}`}
+  class:list={[
+    "card-glow group/card relative flex flex-col overflow-hidden rounded-2xl",
+    "border border-border/25 backdrop-blur-sm",
+    "bg-linear-to-br from-accent/5 via-muted/10 to-transparent",
+    "transition-all duration-300 ease-out",
+    "hover:border-accent/30 hover:from-accent/10 hover:via-muted/20 hover:to-transparent",
+    "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/10",
+  ]}
+>
+  <div
+    class="card-glow-effect pointer-events-none absolute inset-0 z-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover/card:opacity-100"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="relative aspect-video w-full overflow-hidden bg-foreground/5">
+    {
+      coverImage ? (
+        typeof coverImage === "string" || coverImage.format === "svg" ? (
+          <img
+            src={typeof coverImage === "string" ? coverImage : coverImage.src}
+            alt={`${title} interface`}
+            width={
+              typeof coverImage === "string" ? undefined : coverImage.width
+            }
+            height={
+              typeof coverImage === "string" ? undefined : coverImage.height
+            }
+            class="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+            loading={loading}
+          />
+        ) : (
+          <Image
+            src={coverImage}
+            alt={`${title} interface`}
+            class="h-full w-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+            loading={loading}
+            widths={[400, 800]}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            format="avif"
+            quality={72}
+          />
+        )
+      ) : (
+        <div class="flex h-full items-center justify-center bg-linear-to-br from-accent/10 via-muted/15 to-background text-foreground/35">
+          <span class="font-firacode text-2xl font-semibold tracking-tight">
+            {title}
+          </span>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="relative z-5 flex flex-1 flex-col p-4 sm:p-5">
+    <h2
+      class="text-lg font-semibold text-foreground transition-colors duration-200 group-hover/card:text-accent"
+    >
+      {title}
+    </h2>
+    <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground/65">
+      {description}
+    </p>
+    {
+      tags.length > 0 && (
+        <ul
+          class="mt-4 flex flex-wrap gap-2"
+          aria-label={t("tools.categories")}
+        >
+          {tags.map(tag => (
+            <li class="rounded-full border border-accent/15 bg-accent/5 px-2.5 py-1 font-firacode text-xs text-foreground/65">
+              {tag}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</a>
+
+<style>
+  .card-glow-effect {
+    background: radial-gradient(
+      350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      color-mix(in oklab, var(--accent) 8%, transparent) 0%,
+      color-mix(in oklab, var(--accent) 4%, transparent) 30%,
+      transparent 80%
+    );
+  }
+</style>

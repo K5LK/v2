@@ -1,0 +1,129 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Breadcrumb from "@/components/Breadcrumb.astro";
+import IconTools from "@/assets/icons/IconTools.svg";
+import { SITE } from "@/config";
+import { useTranslations } from "@/i18n/utils";
+import {
+  getToolCoverImage,
+  getToolSlug,
+  isToolEntryForLocale,
+} from "@/utils/tools";
+
+export async function getStaticPaths() {
+  const tools = await getCollection(
+    "tools",
+    ({ id, data }) => !data.draft && isToolEntryForLocale(id, "en")
+  );
+  return tools.map(entry => ({
+    params: { tool: getToolSlug(entry.id) },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, description, website, tags } = entry.data;
+const coverImage = getToolCoverImage(entry.id, entry.data.coverImage);
+const locale = Astro.currentLocale || "en";
+const t = useTranslations(locale);
+---
+
+<Layout
+  title={`${title} | ${t("nav.tools")} | ${SITE.title}`}
+  description={description}
+>
+  <Header />
+  {SITE.showBackButton && <Breadcrumb withBackButton />}
+  <main
+    id="main-content"
+    class:list={["relative app-layout pb-16", { "mt-8": !SITE.showBackButton }]}
+  >
+    <header class="mb-10 border-b border-border/10 pt-8 pb-10 sm:pb-12">
+      <div class="mb-5 inline-flex items-center gap-2 text-accent">
+        <IconTools class="size-5" />
+        <span
+          class="font-firacode text-xs font-bold tracking-[0.2em] uppercase opacity-90"
+        >
+          {t("nav.tools")}
+        </span>
+      </div>
+      <h1
+        class="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl"
+      >
+        {title}
+      </h1>
+      <p
+        class="mt-5 max-w-3xl text-lg leading-relaxed text-foreground/60 sm:text-xl"
+      >
+        {description}
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        {
+          tags.map(tag => (
+            <span class="rounded-full border border-accent/15 bg-accent/5 px-3 py-1 font-firacode text-xs text-foreground/65">
+              {tag}
+            </span>
+          ))
+        }
+        {
+          website && (
+            <a
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-full border border-accent/25 px-3 py-1 font-firacode text-xs text-accent transition-colors hover:bg-accent/10"
+            >
+              {t("tools.visitWebsite")}
+              <span aria-hidden="true">↗</span>
+            </a>
+          )
+        }
+      </div>
+    </header>
+
+    {
+      coverImage && (
+        <div class="mb-10 overflow-hidden rounded-2xl border border-border/20">
+          {typeof coverImage === "string" || coverImage.format === "svg" ? (
+            <img
+              src={typeof coverImage === "string" ? coverImage : coverImage.src}
+              alt={`${title} interface`}
+              width={
+                typeof coverImage === "string" ? undefined : coverImage.width
+              }
+              height={
+                typeof coverImage === "string" ? undefined : coverImage.height
+              }
+              class="max-h-[60vh] w-full object-cover"
+              loading="eager"
+            />
+          ) : (
+            <Image
+              src={coverImage}
+              alt={`${title} interface`}
+              class="max-h-[60vh] w-full object-cover"
+              loading="eager"
+              fetchpriority="high"
+              widths={[800, 1200, 1600]}
+              sizes="(max-width: 1200px) 100vw, 1200px"
+              format="avif"
+              quality={72}
+            />
+          )}
+        </div>
+      )
+    }
+
+    <article
+      class="app-prose w-full max-w-app prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)"
+    >
+      <Content />
+    </article>
+  </main>
+  <Footer />
+</Layout>

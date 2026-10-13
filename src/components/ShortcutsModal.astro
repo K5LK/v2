@@ -20,7 +20,6 @@ const t = useTranslations(locale);
   data-toast-goto-tags={t("shortcuts.toast.gotoTags")}
   data-toast-goto-galleries={t("shortcuts.toast.gotoGalleries")}
   data-toast-theme={t("shortcuts.toast.themeChanged")}
-  data-toast-lang={t("shortcuts.toast.lang")}
   data-toast-sound-enabled={t("shortcuts.toast.soundFxEnabled")}
   data-toast-sound-muted={t("shortcuts.toast.soundFxMuted")}
   data-toast-konami={t("shortcuts.toast.konami")}
@@ -131,10 +130,6 @@ const t = useTranslations(locale);
               <span class="action-desc">{t("shortcuts.action.reading")}</span>
               <span class="key-combo"><kbd class="kbd-key">r</kbd></span>
             </li>
-            <li>
-              <span class="action-desc">{t("shortcuts.action.lang")}</span>
-              <span class="key-combo"><kbd class="kbd-key">l</kbd></span>
-            </li>
             <!-- Home Shell Terminal Trigger (Key: 'C') -->
             <li>
               <span class="action-desc">{t("shortcuts.action.terminal")}</span>
@@ -217,20 +212,28 @@ const t = useTranslations(locale);
 </div>
 
 <!-- Centered Viewport Konami Celebration Modal with Confetti -->
-<div id="konami-celebration-modal" class="konami-celebration-overlay hidden" aria-hidden="true">
+<div
+  id="konami-celebration-modal"
+  class="konami-celebration-overlay hidden"
+  aria-hidden="true"
+>
   <canvas id="konami-confetti-canvas" class="konami-confetti-canvas"></canvas>
-  <div class="konami-celebration-backdrop" id="konami-celebration-backdrop"></div>
+  <div class="konami-celebration-backdrop" id="konami-celebration-backdrop">
+  </div>
   <div class="konami-celebration-card" data-konami-card>
     <div class="konami-card-glow" aria-hidden="true"></div>
     <div class="konami-trophy-icon">🕹️✨</div>
     <h3 class="konami-title">30 LIVES UNLOCKED!</h3>
     <p class="konami-desc">
-      {locale === "es"
-        ? "¡Código Konami activado con éxito! Has desbloqueado el tema secreto 'Arcade 80s' y efectos retro ✨"
-        : "Konami Code successfully activated! Secret 'Arcade 80s' neon theme & retro visual FX unlocked ✨"}
+      {
+        locale === "es"
+          ? "¡Código Konami activado con éxito! Has desbloqueado el tema secreto 'Arcade 80s' y efectos retro ✨"
+          : "Konami Code successfully activated! Secret 'Arcade 80s' neon theme & retro visual FX unlocked ✨"
+      }
     </p>
     <div class="konami-keys-badge">
-      <span>↑</span><span>↑</span><span>↓</span><span>↓</span><span>←</span><span>→</span><span>←</span><span>→</span><span>B</span><span>A</span>
+      <span>↑</span><span>↑</span><span>↓</span><span>↓</span><span>←</span
+      ><span>→</span><span>←</span><span>→</span><span>B</span><span>A</span>
     </div>
     <button id="konami-close-btn" type="button" class="konami-action-btn">
       {locale === "es" ? "¡A Jugar! 🚀" : "Let's Play! 🚀"}
